@@ -1,6 +1,8 @@
 package org.rag4j.chatter.web.agents;
 
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -17,8 +19,8 @@ public class FootballAgent extends SubscriberAgent {
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
 
-    public FootballAgent(ChatClient chatClient, ChatMemory chatMemory, MessageService messageService) {
-        super(AGENT_NAME, messageService);
+    public FootballAgent(ChatClient chatClient, ChatMemory chatMemory, MessageService messageService, PresenceService presenceService) {
+        super(AGENT_NAME, PresenceRole.AGENT, messageService, presenceService);
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
     }

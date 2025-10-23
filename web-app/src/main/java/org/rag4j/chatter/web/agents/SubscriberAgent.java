@@ -4,6 +4,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
@@ -11,17 +13,24 @@ import reactor.core.publisher.Mono;
 public abstract class SubscriberAgent {
 
     private final MessageService messageService;
+    private final PresenceService presenceService;
     private final String agentName;
+    private final PresenceRole role;
     private Disposable subscription;
 
-    public SubscriberAgent(String agentName, MessageService messageService) {
+    public SubscriberAgent(String agentName, PresenceRole role, MessageService messageService, PresenceService presenceService) {
         this.messageService = messageService;
+        this.presenceService = presenceService;
         this.agentName = agentName;
+        this.role = role;
     }
 
     @PostConstruct
     public void subscribe() {
         logger().info("Registering {} subscriber", agentName);
+        if (presenceService != null) {
+            presenceService.markOnline(agentName, role);
+        }
         subscription = messageService.stream()
                 .doOnNext(e -> logger().info("Received message from {}", e.author()))
                 .filter(envelope -> !isOwnMessage(envelope))
@@ -35,6 +44,9 @@ public abstract class SubscriberAgent {
             subscription.dispose();
         }
         logger().info("{} subscriber disposed", agentName);
+        if (presenceService != null) {
+            presenceService.markOffline(agentName);
+        }
     }
 
     protected void publishResponse(MessageEnvelope incoming) {

@@ -12,21 +12,22 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.memory.ChatMemory;
+import org.rag4j.chatter.web.presence.PresenceService;
 import reactor.test.StepVerifier;
 
 class EchoAgentTests {
 
     private MessageBus messageBus;
     private MessageService messageService;
+    private PresenceService presenceService;
     private EchoAgent subscriber;
 
     @BeforeEach
     void setUp() {
+        presenceService = mock(PresenceService.class);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
-        subscriber = new EchoAgent(messageService);
+        subscriber = new EchoAgent(messageService, presenceService);
         subscriber.subscribe();
     }
 

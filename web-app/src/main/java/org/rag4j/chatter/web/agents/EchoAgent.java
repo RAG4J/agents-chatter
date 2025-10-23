@@ -1,6 +1,8 @@
 package org.rag4j.chatter.web.agents;
 
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.Disposable;
@@ -15,8 +17,8 @@ public class EchoAgent extends SubscriberAgent {
 
     private Disposable subscription;
 
-    public EchoAgent(MessageService messageService) {
-        super(AGENT_NAME, messageService);
+    public EchoAgent(MessageService messageService, PresenceService presenceService) {
+        super(AGENT_NAME, PresenceRole.AGENT, messageService, presenceService);
     }
 
 

@@ -59,6 +59,14 @@ Realtime updates and bidirectional messaging are handled through a WebSocket cha
 - Clients send JSON payloads matching the POST body (`author`, `payload`) to broadcast to all subscribers.
 - A built-in `Echo Agent` subscribes to the message bus and replies with an `echo …` message for every received message (except its own); disable or extend it in `web-app/src/main/java/org/rag4j/chatter/web/agents`.
 
+### Presence API
+
+Track who is currently connected:
+
+- `GET /api/presence` returns the participant list (agents + humans) with their online status and connection counts.
+- `GET /api/presence/stream` (text/event-stream) emits incremental updates for realtime dashboards.
+- WebSocket clients can set a `participant` query parameter (e.g., `ws://…/ws/messages?participant=You`) to register their display name; otherwise "You" is assumed.
+
 Basic browser example:
 
 ```javascript

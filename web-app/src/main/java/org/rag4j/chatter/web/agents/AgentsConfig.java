@@ -1,6 +1,7 @@
 package org.rag4j.chatter.web.agents;
 
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.presence.PresenceService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
@@ -17,17 +18,18 @@ public class AgentsConfig {
 
     @Bean
     @Profile("echo-agent")
-    public EchoAgent echoAgent(MessageService messageService) {
-        return new EchoAgent(messageService);
+    public EchoAgent echoAgent(MessageService messageService, PresenceService presenceService) {
+        return new EchoAgent(messageService, presenceService);
     }
 
     @Bean
     @Profile("football-agent")
     public FootballAgent footballAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
-                                       MessageService messageService) {
+                                       MessageService messageService,
+                                       PresenceService presenceService) {
 
-        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService);
+        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, presenceService);
     }
 
     @Bean
