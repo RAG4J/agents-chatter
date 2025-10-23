@@ -5,7 +5,7 @@ Baseline multi-module workspace for agent-chat experiments. The backend stack cu
 ## Project Layout
 
 - `pom.xml` — parent Maven project aggregating shared dependency management and plugins.
-- `web-app` — Spring Boot WebFlux service exposing a simple status endpoint.
+- `web-app` — Spring Boot WebFlux service exposing REST/WebSocket chat endpoints.
 - `event-bus` — Spring Boot module exposing an in-memory Reactor-powered message bus for chat agents.
 - `backlog/` — task tracking via Backlog.md (do not edit manually).
 
@@ -40,48 +40,44 @@ The application exposes a status endpoint returning service metadata:
 GET http://localhost:8080/api/status
 ```
 
+### Chat API
+
+All chat endpoints live under `/api/messages` and speak JSON friendly to React clients:
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/messages` | Returns the in-memory history of messages (id, author, payload, timestamp). |
+| `POST` | `/api/messages` | Publishes a new message and echoes the created payload. Body shape: `{ "author": "alice", "payload": "Hello" }`. |
+
+### WebSocket Endpoint
+
+Realtime updates and bidirectional messaging are handled through a WebSocket channel:
+
+- URL: `ws://localhost:8080/ws/messages`
+- Outgoing messages are JSON encoded `MessageDto` objects (same shape as the REST response).
+- Clients send JSON payloads matching the POST body (`author`, `payload`) to broadcast to all subscribers.
+
+Basic browser example:
+
+```javascript
+const socket = new WebSocket("ws://localhost:8080/ws/messages");
+socket.onmessage = event => console.log("Incoming", JSON.parse(event.data));
+socket.onopen = () => socket.send(JSON.stringify({ author: "react-client", payload: "Hello!" }));
+```
+
 ### Environment Variables
 
-None required for the status endpoint; it emits static payload details and a timestamp. Future features may introduce configuration via environment variables.
+None required for the chat API; everything runs in-memory. Future tasks will introduce provider credentials or persistence configuration.
 
 ## Event Bus Module
 
-The `event-bus` module is a **library** that provides a reactive `MessageBus` for broadcasting messages to multiple subscribers. It's backed by Project Reactor's `Sinks.Many` and implements hot stream semantics (subscribers only receive messages published after they connect).
+The `event-bus` module provides the reusable `MessageBus` abstraction used by the web application. It relies on Reactor `Sinks.many().multicast().onBackpressureBuffer()` to broadcast messages to an arbitrary number of subscribers and is ready to be swapped with an external broker-backed implementation when needed.
 
-### Using as a Library
+Key types:
 
-Add to your module's `pom.xml`:
-
-```xml
-<dependency>
-    <groupId>org.rag4j.chatter</groupId>
-    <artifactId>event-bus</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-</dependency>
-```
-
-Inject and use:
-
-```java
-@Autowired MessageBus messageBus;
-
-// Publish
-messageBus.publish(MessageEnvelope.from("alice", "Hello!"));
-
-// Subscribe
-messageBus.stream().subscribe(msg -> log.info("Received: {}", msg.payload()));
-```
-
-### Example: MessageController in web-app
-
-The `web-app` module demonstrates integration:
-- `POST /api/messages` - Publish messages
-- `GET /api/messages/stream` - Subscribe via Server-Sent Events
-
-See:
-- `event-bus/USAGE.md` - Complete library usage guide
-- `event-bus/reactor.md` - Deep dive into the Reactor implementation
-- `web-app/.../MessageController.java` - Working REST/SSE example
+- `MessageBus` — publish/stream contract.
+- `ReactorMessageBus` — in-memory implementation registered as a Spring bean.
+- `MessageEnvelope` — lightweight message descriptor shared between modules.
 
 ## Tooling Notes
 
@@ -91,6 +87,5 @@ See:
 
 ## Next Steps
 
-- Implement the shared `chat-domain` module (task-5) for reusable message/event types.
-- Flesh out the REST + WebSocket backend (task-3) and Reactor-based in-memory bus (task-4).
-- Scaffold the React/Next.js frontend (task-2) and integrate it with the backend endpoints once available.
+- Connect the React/Next.js frontend (task-2) to the REST + WebSocket endpoints documented above.
+- Explore persistence or external broker integration once requirements firm up.
