@@ -24,12 +24,9 @@ class EchoAgentTests {
 
     @BeforeEach
     void setUp() {
-        ChatClient chatClient = mock(ChatClient.class);
-        ChatMemory chatMemory = mock(ChatMemory.class);
-
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
-        subscriber = new EchoAgent(chatClient, chatMemory, messageService);
+        subscriber = new EchoAgent(messageService);
         subscriber.subscribe();
     }
 

@@ -10,40 +10,29 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class AgentsConfig {
 
     @Bean
-    public EchoAgent echoAgent(ChatMemory chatMemory, ChatModel chatModel, MessageService messageService) {
-        return new EchoAgent(
-                ChatClient.builder(chatModel).build(),
-                chatMemory,
-                messageService
-        );
+    @Profile("echo-agent")
+    public EchoAgent echoAgent(MessageService messageService) {
+        return new EchoAgent(messageService);
+    }
+
+    @Bean
+    @Profile("football-agent")
+    public FootballAgent footballAgent(ChatModel chatModel,
+                                       ChatMemory chatMemory,
+                                       MessageService messageService) {
+
+        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService);
     }
 
     @Bean
     public ChatMemory chatMemory() {
         return MessageWindowChatMemory.builder().build();
     }
-
-//    @Bean
-//    ChatModel chatModel(OpenAiApi openAiApi) {
-//        return OpenAiChatModel.builder().openAiApi(openAiApi).defaultOptions(
-//                OpenAiChatOptions.builder().model(OpenAiApi.ChatModel.GPT_5_MINI).build()
-//        ).build();
-//    }
-
-//    @Bean
-//    public OpenAiApi openAIOkHttpClient() {
-//        var openAIApiKey = System.getenv("OPENAI_API_KEY");
-//        if (openAIApiKey == null || openAIApiKey.isEmpty()) {
-//            throw new IllegalArgumentException("We need the OPENAI_API_KEY environment variable set");
-//        }
-//        return OpenAiApi.builder()
-//                .apiKey(openAIApiKey)
-//                .build();
-//    }
 
 }
