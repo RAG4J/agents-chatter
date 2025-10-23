@@ -15,6 +15,7 @@
     <properties>
         <java.version>21</java.version>
         <spring.boot.version>3.5.5</spring.boot.version>
+        <spring-ai.version>1.0.3</spring-ai.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -23,7 +24,6 @@
         <module>event-bus</module>
         <module>web-app</module>
         <module>frontend</module>
-        <!-- chat-domain module will be added in task-5 -->
     </modules>
 
     <dependencyManagement>
@@ -34,6 +34,19 @@
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.rag4j.chatter</groupId>
+                <artifactId>event-bus</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

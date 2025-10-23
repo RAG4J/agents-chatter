@@ -2,6 +2,13 @@ spring:
   application:
     name: web-app
 
+
+  ai:
+    openai:
+      chat:
+        model: "gpt-5-mini"
+      api-key: ${OPENAI_API_KEY:web-app-default-api-key}
+
 logging:
   level:
     org.rag4j.chatter: INFO

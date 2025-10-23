@@ -57,6 +57,7 @@ Realtime updates and bidirectional messaging are handled through a WebSocket cha
 - URL: `ws://localhost:8080/ws/messages`
 - Outgoing messages are JSON encoded `MessageDto` objects (same shape as the REST response).
 - Clients send JSON payloads matching the POST body (`author`, `payload`) to broadcast to all subscribers.
+- A built-in `Echo Agent` subscribes to the message bus and replies with an `echo …` message for every received message (except its own); disable or extend it in `web-app/src/main/java/org/rag4j/chatter/web/agents`.
 
 Basic browser example:
 

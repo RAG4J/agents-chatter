@@ -18,7 +18,6 @@
         <dependency>
             <groupId>org.rag4j.chatter</groupId>
             <artifactId>event-bus</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -27,8 +26,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-openai</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
