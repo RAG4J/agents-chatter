@@ -27,6 +27,8 @@ NEXT_PUBLIC_WS_URL=ws://localhost:8080/ws/messages
 
 If these variables are omitted, the UI falls back to mock data only.
 
+Presence avatars in the header use the backend `/api/presence` REST endpoint and `/api/presence/stream` SSE feed. Ensure the Spring Boot backend is running and `NEXT_PUBLIC_API_BASE` points to it so avatars update in real time. To pick a custom display name when connecting over WebSocket, include `?participant=YourName` in the connection URL; otherwise "You" is used.
+
 ## Available Scripts
 
 - `npm run dev` – start the Next.js development server with fast refresh.

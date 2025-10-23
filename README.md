@@ -67,6 +67,11 @@ Track who is currently connected:
 - `GET /api/presence/stream` (text/event-stream) emits incremental updates for realtime dashboards.
 - WebSocket clients can set a `participant` query parameter (e.g., `ws://…/ws/messages?participant=You`) to register their display name; otherwise "You" is assumed.
 
+### Frontend Integration
+
+- The Next.js header consumes the presence feed and renders avatars for online agents/humans.
+- Set `NEXT_PUBLIC_API_BASE` to point at the backend (default `http://localhost:8080/api`) so the UI can call `/presence` and `/presence/stream`.
+
 Basic browser example:
 
 ```javascript

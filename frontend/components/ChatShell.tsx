@@ -19,6 +19,7 @@ import { MessageComposer } from "@/components/MessageComposer";
 import { MessageHeader } from "@/components/MessageHeader";
 import { MessageList } from "@/components/MessageList";
 import { useMessagesFeed } from "@/hooks/useMessagesFeed";
+import { usePresence } from "@/hooks/usePresence";
 
 export default function ChatShell() {
   const {
@@ -32,12 +33,18 @@ export default function ChatShell() {
     clearError
   } = useMessagesFeed();
 
+  const { participants } = usePresence();
+
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
     <Container maxW="6xl" py={{ base: 8, md: 12 }}>
       <Stack spacing={8}>
-        <MessageHeader status={status} source={source} />
+        <MessageHeader
+          status={status}
+          source={source}
+          participants={participants}
+        />
         <Grid
           templateColumns={{ base: "1fr", lg: "3fr 2fr" }}
           gap={{ base: 6, lg: 10 }}

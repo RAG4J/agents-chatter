@@ -2,7 +2,7 @@ spring:
   application:
     name: web-app
   profiles:
-    active: echo-agent,football-agent
+    active: football-agent
     default: echo-agent
   ai:
     openai:

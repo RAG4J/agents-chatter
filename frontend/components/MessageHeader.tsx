@@ -1,23 +1,28 @@
 "use client";
 
 import {
-  AvatarGroup,
   Avatar,
+  AvatarGroup,
   Badge,
   Box,
   Flex,
   Heading,
+  HStack,
   IconButton,
   Stack,
   Text,
+  Tooltip,
   useColorMode,
   useColorModeValue
 } from "@chakra-ui/react";
 import { IoMoon, IoSunny } from "react-icons/io5";
 
+import { PresenceDto } from "@/lib/api/presence";
+
 interface MessageHeaderProps {
   status: "idle" | "connecting" | "open" | "closed" | "error";
   source: "backend" | "mock";
+  participants?: PresenceDto[];
 }
 
 const statusConfig: Record<
@@ -31,7 +36,7 @@ const statusConfig: Record<
   error: { label: "Realtime error", color: "red" }
 };
 
-export function MessageHeader({ status, source }: MessageHeaderProps) {
+export function MessageHeader({ status, source, participants = [] }: MessageHeaderProps) {
   const { toggleColorMode, colorMode } = useColorMode();
   const bg = useColorModeValue("whiteAlpha.900", "whiteAlpha.200");
   const icon = colorMode === "light" ? <IoMoon /> : <IoSunny />;
@@ -54,10 +59,18 @@ export function MessageHeader({ status, source }: MessageHeaderProps) {
         </Text>
       </Stack>
       <Stack spacing={2} align="center">
-        <AvatarGroup size="sm" max={3}>
-          <Avatar name="Atlas Agent" />
-          <Avatar name="Design Agent" />
-          <Avatar name="You" />
+        <AvatarGroup size="sm" max={5}>
+          {participants
+            .filter((participant) => participant.online)
+            .map((participant) => (
+              <Tooltip key={participant.name} label={`${participant.name} (${participant.role.toLowerCase()})`}>
+                <Avatar
+                  name={participant.name}
+                  size="sm"
+                  bg={participant.role === "AGENT" ? "brand.500" : "gray.500"}
+                />
+              </Tooltip>
+            ))}
         </AvatarGroup>
         <Badge colorScheme={config.color} variant="subtle">
           {status.toUpperCase()}
@@ -68,14 +81,19 @@ export function MessageHeader({ status, source }: MessageHeaderProps) {
           </Badge>
         )}
       </Stack>
-      <Box>
-        <IconButton
-          aria-label="Toggle color mode"
-          icon={icon}
-          variant="ghost"
-          onClick={toggleColorMode}
-        />
-      </Box>
+      <HStack spacing={3}>
+        <Text fontSize="sm" color="gray.400">
+          {participants.filter((participant) => participant.online).length} online
+        </Text>
+        <Box>
+          <IconButton
+            aria-label="Toggle color mode"
+            icon={icon}
+            variant="ghost"
+            onClick={toggleColorMode}
+          />
+        </Box>
+      </HStack>
     </Flex>
   );
 }
