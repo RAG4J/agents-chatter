@@ -7,9 +7,10 @@ Baseline multi-module workspace for agent-chat experiments. The backend stack cu
 - `pom.xml` — parent Maven project aggregating shared dependency management and plugins.
 - `web-app` — Spring Boot WebFlux service exposing REST/WebSocket chat endpoints.
 - `event-bus` — Spring Boot module exposing an in-memory Reactor-powered message bus for chat agents.
+- `frontend` — Next.js + Chakra UI chat client scaffolded for React consumption.
 - `backlog/` — task tracking via Backlog.md (do not edit manually).
 
-Future work will introduce a shared `chat-domain` module (see task-5) and the React frontend (task-2).
+Future work will introduce a shared `chat-domain` module (see task-5).
 
 ## Prerequisites
 
@@ -69,6 +70,32 @@ socket.onopen = () => socket.send(JSON.stringify({ author: "react-client", paylo
 
 None required for the chat API; everything runs in-memory. Future tasks will introduce provider credentials or persistence configuration.
 
+## Frontend (Next.js)
+
+The `frontend` module houses the React/Next.js experience. To work directly with npm:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Available scripts:
+
+- `npm run dev` – local development server on <http://localhost:3000>
+- `npm run build` – production build (also triggered via Maven)
+- `npm run start` – serve the production build
+- `npm run lint` – ESLint
+- `npm run test` – Vitest smoke test for the chat view
+
+Maven wraps these commands so the frontend fits into the existing build pipeline:
+
+```bash
+mvn -pl frontend verify
+```
+
+Environment variables for frontend integration live in `frontend/.env.example` (`NEXT_PUBLIC_API_BASE`, `NEXT_PUBLIC_WS_URL`).
+
 ## Event Bus Module
 
 The `event-bus` module provides the reusable `MessageBus` abstraction used by the web application. It relies on Reactor `Sinks.many().multicast().onBackpressureBuffer()` to broadcast messages to an arbitrary number of subscribers and is ready to be swapped with an external broker-backed implementation when needed.
@@ -87,5 +114,5 @@ Key types:
 
 ## Next Steps
 
-- Connect the React/Next.js frontend (task-2) to the REST + WebSocket endpoints documented above.
-- Explore persistence or external broker integration once requirements firm up.
+- Enhance message persistence (database or event store) and delivery guarantees.
+- Explore authentication/authorization for agent and human participants.

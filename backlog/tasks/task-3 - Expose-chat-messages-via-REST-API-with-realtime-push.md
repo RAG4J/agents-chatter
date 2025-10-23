@@ -1,11 +1,11 @@
 ---
 id: task-3
 title: Expose chat messages via REST API with realtime push
-status: In Progress
+status: Done
 assignee:
   - assistant
 created_date: '2025-10-23 07:40'
-updated_date: '2025-10-23 13:30'
+updated_date: '2025-10-23 13:39'
 labels: []
 dependencies: []
 ---
@@ -18,10 +18,10 @@ Extend the backend to provide REST endpoints that serve chat messages for the fr
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 REST endpoint returns the latest chat messages in a format consumable by the frontend chat UI.
-- [ ] #2 WebSocket channel streams new messages to subscribed clients and accepts outbound messages, with sample integration test or documentation showing how the frontend connects and sends data.
-- [ ] #3 Message storage or retrieval implementation supports both historical fetch and realtime updates (in-memory stub acceptable if documented).
-- [ ] #4 README or backend docs describe the API contract, WebSocket protocol, and how to run the backend locally for manual testing.
+- [x] #1 REST endpoint returns the latest chat messages in a format consumable by the frontend chat UI.
+- [x] #2 WebSocket channel streams new messages to subscribed clients and accepts outbound messages, with sample integration test or documentation showing how the frontend connects and sends data.
+- [x] #3 Message storage or retrieval implementation supports both historical fetch and realtime updates (in-memory stub acceptable if documented).
+- [x] #4 README or backend docs describe the API contract, WebSocket protocol, and how to run the backend locally for manual testing.
 <!-- AC:END -->
 
 ## Implementation Plan

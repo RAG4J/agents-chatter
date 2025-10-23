@@ -22,6 +22,7 @@
     <modules>
         <module>event-bus</module>
         <module>web-app</module>
+        <module>frontend</module>
         <!-- chat-domain module will be added in task-5 -->
     </modules>
 
