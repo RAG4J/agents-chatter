@@ -1,11 +1,11 @@
 ---
 id: task-6
 title: Track chat presence and expose connected participants
-status: In Progress
+status: Done
 assignee:
   - assistant
 created_date: '2025-10-23 17:03'
-updated_date: '2025-10-23 22:31'
+updated_date: '2025-10-23 22:37'
 labels: []
 dependencies: []
 ---
@@ -18,10 +18,10 @@ Enhance the Spring Boot backend to keep track of active chat subscribers (WebSoc
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Server captures participant identity on connect (e.g., handshake param or registration message) and stores it while the session is active.
-- [ ] #2 Presence list is updated when clients connect/disconnect and can be queried via REST and/or pushed via a dedicated WebSocket channel or message event.
-- [ ] #3 Message bus or presence service cleans up disconnected sessions to prevent stale entries.
-- [ ] #4 Tests or manual verification steps cover connect/disconnect scenarios and confirm presence list accuracy.
+- [x] #1 Server captures participant identity on connect (e.g., handshake param or registration message) and stores it while the session is active.
+- [x] #2 Presence list is updated when clients connect/disconnect and can be queried via REST and/or pushed via a dedicated WebSocket channel or message event.
+- [x] #3 Message bus or presence service cleans up disconnected sessions to prevent stale entries.
+- [x] #4 Tests or manual verification steps cover connect/disconnect scenarios and confirm presence list accuracy.
 <!-- AC:END -->
 
 ## Implementation Plan
