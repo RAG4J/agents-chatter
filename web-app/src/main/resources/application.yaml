@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: web-app
+
+logging:
+  level:
+    org.rag4j.chatter: INFO
