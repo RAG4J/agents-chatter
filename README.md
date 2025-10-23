@@ -6,7 +6,7 @@ Baseline multi-module workspace for agent-chat experiments. The backend stack cu
 
 - `pom.xml` — parent Maven project aggregating shared dependency management and plugins.
 - `web-app` — Spring Boot WebFlux service exposing a simple status endpoint.
-- `event-bus` — Spring Boot module prepared for the upcoming message bus and realtime delivery features.
+- `event-bus` — Spring Boot module exposing an in-memory Reactor-powered message bus for chat agents.
 - `backlog/` — task tracking via Backlog.md (do not edit manually).
 
 Future work will introduce a shared `chat-domain` module (see task-5) and the React frontend (task-2).
@@ -46,7 +46,42 @@ None required for the status endpoint; it emits static payload details and a tim
 
 ## Event Bus Module
 
-The `event-bus` module currently boots with a minimal configuration so upcoming tasks can add WebSocket streaming and the in-memory subscription bus. For now it shares the parent configuration and confirms the build pipeline works across modules.
+The `event-bus` module is a **library** that provides a reactive `MessageBus` for broadcasting messages to multiple subscribers. It's backed by Project Reactor's `Sinks.Many` and implements hot stream semantics (subscribers only receive messages published after they connect).
+
+### Using as a Library
+
+Add to your module's `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.rag4j.chatter</groupId>
+    <artifactId>event-bus</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+Inject and use:
+
+```java
+@Autowired MessageBus messageBus;
+
+// Publish
+messageBus.publish(MessageEnvelope.from("alice", "Hello!"));
+
+// Subscribe
+messageBus.stream().subscribe(msg -> log.info("Received: {}", msg.payload()));
+```
+
+### Example: MessageController in web-app
+
+The `web-app` module demonstrates integration:
+- `POST /api/messages` - Publish messages
+- `GET /api/messages/stream` - Subscribe via Server-Sent Events
+
+See:
+- `event-bus/USAGE.md` - Complete library usage guide
+- `event-bus/reactor.md` - Deep dive into the Reactor implementation
+- `web-app/.../MessageController.java` - Working REST/SSE example
 
 ## Tooling Notes
 

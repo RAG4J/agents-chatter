@@ -1,0 +1,18 @@
+package org.rag4j.chatter.eventbus.config;
+
+import org.rag4j.chatter.eventbus.bus.MessageBus;
+import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Registers the in-memory Reactor message bus.
+ */
+@Configuration
+public class MessageBusConfiguration {
+
+    @Bean
+    public MessageBus messageBus() {
+        return new ReactorMessageBus();
+    }
+}

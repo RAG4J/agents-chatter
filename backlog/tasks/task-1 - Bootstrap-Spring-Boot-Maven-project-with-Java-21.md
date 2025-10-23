@@ -1,11 +1,11 @@
 ---
 id: task-1
 title: Bootstrap Spring Boot Maven project with Java 21
-status: In Progress
+status: Done
 assignee:
   - assistant
 created_date: '2025-10-23 07:26'
-updated_date: '2025-10-23 11:57'
+updated_date: '2025-10-23 12:12'
 labels: []
 dependencies: []
 ---
@@ -22,10 +22,10 @@ Create a modular setup with a parent pom taking care of dependency management an
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Parent Maven project defines modules for `web-app` and `event-bus`, centralizes dependency management, and uses the `org.rag4j.chatter` base package across modules.
-- [ ] #2 Maven build is configured for Java 21 (compiler plugin, language level, and toolchain) and `mvn clean verify` from the root completes successfully.
-- [ ] #3 `web-app` module launches with `mvn -pl web-app spring-boot:run` exposing at least one REST endpoint without runtime errors.
-- [ ] #4 README documents how to build and run the application locally, including any environment variables needed for the sample endpoint.
+- [x] #1 Parent Maven project defines modules for `web-app` and `event-bus`, centralizes dependency management, and uses the `org.rag4j.chatter` base package across modules.
+- [x] #2 Maven build is configured for Java 21 (compiler plugin, language level, and toolchain) and `mvn clean verify` from the root completes successfully.
+- [x] #3 `web-app` module launches with `mvn -pl web-app spring-boot:run` exposing at least one REST endpoint without runtime errors.
+- [x] #4 README documents how to build and run the application locally, including any environment variables needed for the sample endpoint.
 <!-- AC:END -->
 
 ## Implementation Plan
