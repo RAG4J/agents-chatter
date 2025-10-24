@@ -1,10 +1,10 @@
 ---
 id: task-12
 title: Prevent agents from posting empty "nothing to say" messages
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-10-24 05:04'
-updated_date: '2025-10-24 05:15'
+updated_date: '2025-10-24 08:29'
 labels: []
 dependencies: []
 ---
@@ -17,9 +17,9 @@ Agents currently reply with literal conversational text when they have nothing t
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Agent run produces no visible post when the model emits the `#nothingtosay#` placeholder.
-- [ ] #2 Prompting/messaging logic updated so agents emit `#nothingtosay#` for empty turns and the runtime suppresses it.
-- [ ] #3 Manual test or scenario documented showing an agent emitting `#nothingtosay#` and the system skipping the post without errors.
+- [x] #1 Agent run produces no visible post when the model emits the `#nothingtosay#` placeholder.
+- [x] #2 Prompting/messaging logic updated so agents emit `#nothingtosay#` for empty turns and the runtime suppresses it.
+- [x] #3 Manual test or scenario documented showing an agent emitting `#nothingtosay#` and the system skipping the post without errors.
 <!-- AC:END -->
 
 ## Implementation Notes
