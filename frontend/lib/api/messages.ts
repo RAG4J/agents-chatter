@@ -1,4 +1,4 @@
-import { Message } from "@/lib/types";
+import { Message, MessageOrigin } from "@/lib/types";
 import { seedMessages } from "@/lib/mockMessages";
 
 export type MessageDto = {
@@ -6,6 +6,10 @@ export type MessageDto = {
   author: string;
   payload: string;
   timestamp: string;
+  threadId?: string;
+  parentMessageId?: string | null;
+  originType?: MessageOrigin;
+  agentReplyDepth?: number;
 };
 
 const DEFAULT_API_BASE = "http://localhost:8080/api";
@@ -18,14 +22,31 @@ const hasBackend =
   typeof process !== "undefined" && !!process.env.NEXT_PUBLIC_API_BASE;
 
 export function mapDtoToMessage(dto: MessageDto): Message {
+  const origin: MessageOrigin =
+    dto.originType === "AGENT" || dto.originType === "HUMAN"
+      ? dto.originType
+      : "UNKNOWN";
+  const inferredAuthorType: Message["author"]["type"] =
+    origin === "AGENT"
+      ? "agent"
+      : origin === "HUMAN"
+        ? "human"
+        : dto.author.toLowerCase().includes("agent")
+          ? "agent"
+          : "human";
   return {
     id: dto.id,
     author: {
       name: dto.author,
-      type: dto.author.toLowerCase().includes("agent") ? "agent" : "human"
+      type: inferredAuthorType
     },
     content: dto.payload,
-    timestamp: dto.timestamp
+    timestamp: dto.timestamp,
+    threadId: dto.threadId ?? dto.id,
+    parentMessageId:
+      dto.parentMessageId === undefined ? null : dto.parentMessageId,
+    originType: origin,
+    agentReplyDepth: dto.agentReplyDepth ?? 0
   };
 }
 
@@ -77,12 +98,18 @@ export async function postMessage(
     if (hasBackend) {
       console.error("Falling back to mock echo:", error);
     }
+    const now = Date.now();
+    const identifier = `mock-${now}`;
     return {
       data: {
-        id: `mock-${Date.now()}`,
+        id: identifier,
         author: message.author,
         content: message.content,
-        timestamp: new Date().toISOString()
+        timestamp: new Date(now).toISOString(),
+        threadId: identifier,
+        parentMessageId: null,
+        originType: message.author.type === "agent" ? "AGENT" : "HUMAN",
+        agentReplyDepth: message.author.type === "agent" ? 1 : 0
       },
       source: "mock"
     };
