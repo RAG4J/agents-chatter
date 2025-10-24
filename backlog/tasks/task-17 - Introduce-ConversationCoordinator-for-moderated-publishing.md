@@ -1,11 +1,11 @@
 ---
 id: task-17
 title: Introduce ConversationCoordinator for moderated publishing
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-24 10:13'
-updated_date: '2025-10-24 13:25'
+updated_date: '2025-10-24 13:55'
 labels: []
 dependencies: []
 ---
