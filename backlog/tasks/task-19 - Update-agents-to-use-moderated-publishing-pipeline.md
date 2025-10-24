@@ -1,10 +1,11 @@
 ---
 id: task-19
 title: Update agents to use moderated publishing pipeline
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - codex
 created_date: '2025-10-24 10:14'
-updated_date: '2025-10-24 13:56'
+updated_date: '2025-10-24 13:58'
 labels: []
 dependencies: []
 ---
