@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-24 10:14'
-updated_date: '2025-10-24 13:40'
+updated_date: '2025-10-24 13:52'
 labels: []
 dependencies: []
 ---
@@ -55,3 +55,23 @@ Implementation Plan:
    - Update existing agent tests (Echo, placeholder) to ensure moderator interaction is mocked/stubbed when needed; add new tests verifying blocked responses don’t reach the bus.
    - Emit structured logs/metrics on moderation outcomes for future telemetry surfaces (to be consumed by task-20).
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Progress
+- Added moderation contracts (`AgentMessageContext`, `ModerationDecision`, `ModeratorService`) and implemented `RuleBasedModeratorService` driven by configurable cooldown, duplicate, and loop heuristics.
+- Registered the moderator via `ModeratorConfiguration` with `@ConfigurationProperties` support for tuning defaults.
+- Extended `ConversationCoordinator` to run moderator checks prior to publishing and enhanced `PublishRequest` to carry parent metadata; integrated decisions into `AgentPublisher`.
+- Updated REST and WebSocket handlers plus all `SubscriberAgent` implementations/tests to flow through the moderated pipeline.
+- Added targeted unit coverage for the moderator heuristics and refreshed coordinator/agent tests to exercise the new behaviour.
+
+## Testing
+- `mvn -pl web-app test` ⚠️ builds and runs unit suites; fails later when Spring AI integration tests invoke external OpenAI APIs (sandbox restriction).
+- `mvn -pl event-bus install` ✅ (ensures MessageEnvelope changes propagated earlier remain compatible).
+
+## Follow-ups
+- Surface moderation rejections via explicit telemetry feeds for the frontend (task-20).
+- Consider persistence/eviction strategy for moderator thread state to avoid unbounded maps in long-lived sessions.
+- Evaluate whether additional heuristics (semantic similarity, cooldown per thread) are needed once real traffic is observed.
+<!-- SECTION:NOTES:END -->
