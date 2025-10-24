@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-24 10:14'
-updated_date: '2025-10-24 13:58'
+updated_date: '2025-10-24 14:05'
 labels: []
 dependencies: []
 ---
@@ -51,3 +51,20 @@ Implementation Plan:
    - Add integration-style tests (mocking moderator) to simulate rejections and ensure agents do not flood the bus after a block.
    - Document behavioural changes or developer notes for implementing future agents with the moderated pipeline.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Progress
+- Enhanced `SubscriberAgent` with a metadata-aware response flow; added `messagePayload(MessageEnvelope)` hook so agents can inspect thread/depth context and log moderator rejections.
+- Upgraded `AgentPublisher` with a convenience overload for spontaneous messages and ensured coordinator parent envelopes travel through moderation.
+- Updated `EchoAgent` to skip high-depth agent loops leveraging the new metadata hook.
+- Added unit coverage verifying moderator rejections suppress agent output and depth-aware behaviour; refreshed placeholder agent tests accordingly.
+
+## Testing
+- `mvn -pl web-app test -DskipITs` ⚠️ (unit suites pass; run still times out later when Spring AI integration tests attempt external OpenAI calls).
+
+## Follow-ups
+- Consider extending other themed agents with deeper context awareness (e.g., selective replies based on thread metadata) as product requirements emerge.
+- Coordinate with task-20 to surface moderator rejection telemetry so agents/humans see why responses were dropped.
+<!-- SECTION:NOTES:END -->
