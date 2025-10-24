@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-24 10:14'
-updated_date: '2025-10-24 14:08'
+updated_date: '2025-10-24 14:15'
 labels: []
 dependencies: []
 ---
@@ -54,3 +54,23 @@ Implementation Plan:
    - Add frontend tests (component or hook level) to ensure moderation notices appear when events arrive and disappear appropriately.
    - Update documentation/README to explain how moderation telemetry works and how to consume the stream.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Progress
+- Defined a `ModerationEvent` contract and introduced `ModerationEventPublisher` for broadcasting rejections from the rule-based moderator.
+- Extended `RuleBasedModeratorService` to emit moderation events (including rationale, depth, and payload preview) and exposed them via a new SSE endpoint at `/api/moderation/events`.
+- Added `ModerationEventsController` to serve the event stream and wired the moderator configuration to inject the publisher.
+- Frontend now consumes the stream through `useModerationEvents`, surfaces recent moderation notices in the ChatShell sidebar, and handles stream errors gracefully.
+
+## Testing
+- `mvn -pl web-app test -DskipITs` ⚠️ (unit suites pass; run still times out when Spring AI integration tests call external OpenAI APIs).
+- `npm test` ⚠️ existing Vitest config still lacks path aliases, so tests (including new moderation hook coverage) fail to resolve `@/` imports; needs alias fix as follow-up.
+- Added unit coverage for moderation events (`RuleBasedModeratorServiceTests`) and UI hook behaviour (`frontend/hooks/useModerationEvents.test.ts`).
+
+## Follow-ups
+- Update Vitest configuration to resolve `@/` aliases so frontend tests execute without manual stubbing.
+- Consider persisting/replaying a small buffer of moderation events for late subscribers if UX requires historical data.
+- Evaluate how moderation notices should integrate with future notification/UX patterns beyond the current sidebar list.
+<!-- SECTION:NOTES:END -->
