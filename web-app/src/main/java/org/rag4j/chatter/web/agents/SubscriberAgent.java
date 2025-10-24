@@ -12,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 public abstract class SubscriberAgent {
 
+    public static final String NO_MESSAGE_PLACEHOLDER = "#nothingtosay#";
+
     private final MessageService messageService;
     private final PresenceService presenceService;
     private final String agentName;
@@ -51,9 +53,19 @@ public abstract class SubscriberAgent {
 
     protected void publishResponse(MessageEnvelope incoming) {
         messagePayload(incoming.payload())
-                .doOnNext(responsePayload -> logger().info("Handling message from {} as '{}'", incoming.author(),
-                        responsePayload))
-                .flatMap(responsePayload -> Mono.just(messageService.publish(agentName, responsePayload)))
+                .map(responsePayload -> responsePayload == null ? "" : responsePayload.trim())
+                .flatMap(responsePayload -> {
+                    if (responsePayload.isBlank()) {
+                        logger().info("Skipping empty response for {}", agentName);
+                        return Mono.empty();
+                    }
+                    if (responsePayload.toLowerCase().contains(NO_MESSAGE_PLACEHOLDER)) {
+                        logger().info("Suppressing placeholder response for {}", agentName);
+                        return Mono.empty();
+                    }
+                    logger().info("Handling message from {} as '{}'", incoming.author(), responsePayload);
+                    return Mono.fromRunnable(() -> messageService.publish(agentName, responsePayload));
+                })
                 .subscribe();
     }
 

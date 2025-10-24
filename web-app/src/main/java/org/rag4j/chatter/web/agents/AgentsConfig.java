@@ -33,6 +33,16 @@ public class AgentsConfig {
     }
 
     @Bean
+    @Profile("apeldoornit-agent")
+    public ApeldoornITScheduleAgent apeldoornITScheduleAgent(ChatModel chatModel,
+                                                             ChatMemory chatMemory,
+                                                             MessageService messageService,
+                                                             PresenceService presenceService) {
+        return new ApeldoornITScheduleAgent(messageService, presenceService,
+                ChatClient.builder(chatModel).build(), chatMemory);
+    }
+
+    @Bean
     public ChatMemory chatMemory() {
         return MessageWindowChatMemory.builder().build();
     }

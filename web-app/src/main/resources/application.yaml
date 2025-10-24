@@ -2,7 +2,8 @@ spring:
   application:
     name: web-app
   profiles:
-    active: football-agent
+    # available profiles: echo-agent,  football-agent, apeldoornit-agent
+    active: football-agent,apeldoornit-agent
     default: echo-agent
   ai:
     openai:

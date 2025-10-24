@@ -3,6 +3,7 @@ package org.rag4j.chatter.web.presence;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.rag4j.chatter.web.agents.ApeldoornITScheduleAgent;
 import org.rag4j.chatter.web.agents.EchoAgent;
 import org.rag4j.chatter.web.agents.FootballAgent;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,7 +13,8 @@ public class ChatParticipantsProperties {
 
     private List<ParticipantConfig> agents = new ArrayList<>(List.of(
             new ParticipantConfig(EchoAgent.AGENT_NAME, PresenceRole.AGENT),
-            new ParticipantConfig(FootballAgent.AGENT_NAME, PresenceRole.AGENT)
+            new ParticipantConfig(FootballAgent.AGENT_NAME, PresenceRole.AGENT),
+            new ParticipantConfig(ApeldoornITScheduleAgent.AGENT_NAME, PresenceRole.AGENT)
     ));
 
     private ParticipantConfig human = new ParticipantConfig("You", PresenceRole.HUMAN);

@@ -37,7 +37,7 @@ public class FootballAgent extends SubscriberAgent {
                 If you see a message about Football, you will answer it correctly.
                 Feel free to answer any question about Football teams, players, matches, scores, history, and statistics.
                 Always reply in short answers.
-                If the message is not about Football, you will respond with "Nothing to say."
+                If the message is not about Football, respond with the exact placeholder "#nothingtosay#" with no additional text.
                 """;
 
         String userMessage = String.format("""
