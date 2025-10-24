@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-24 10:13'
-updated_date: '2025-10-24 10:25'
+updated_date: '2025-10-24 13:02'
 labels: []
 dependencies: []
 ---
@@ -50,3 +50,22 @@ Implementation Plan:
    - Introduce unit tests covering serialization/deserialization of the updated DTOs on both backend (e.g., JSON contract tests) and frontend (TypeScript mapping).
    - Document the new fields in developer docs or inline comments and note default behaviors until the coordinator/moderator tasks provide real values.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Progress
+- Extended `MessageEnvelope` with conversation metadata (`threadId`, `parentMessageId`, `originType`, `agentReplyDepth`) plus helper factory for future coordinator use.
+- Propagated metadata through REST and WebSocket payloads via enriched `MessageDto`; added backend unit tests covering mapping and JSON serialization defaults.
+- Updated frontend message contracts, DTO mapping, and mock data to surface the new fields with sensible fallbacks; introduced Vitest coverage for mapping defaults.
+
+## Testing
+- `mvn -pl event-bus test` ✅
+- `mvn -pl web-app -am test` ⚠️ fails because agent integration tests call external OpenAI API (blocked in sandbox) after module compilation succeeded; no compilation regressions observed.
+- `npm test` (frontend) ⚠️ existing Vitest suites fail due to unresolved `@/` path alias configuration; new mapping tests covered by same run but currently blocked by the global alias issue.
+
+## Next Steps
+- Resolve Vitest alias configuration so frontend tests can run cleanly.
+- Coordinate with moderation/conversation tasks to replace temporary defaults (threadId = id, origin = UNKNOWN for legacy paths) once new pipeline is implemented.
+- Close task once review complete; downstream tasks (17-20) ready to leverage new metadata.
+<!-- SECTION:NOTES:END -->
