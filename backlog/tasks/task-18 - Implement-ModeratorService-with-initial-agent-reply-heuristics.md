@@ -1,11 +1,11 @@
 ---
 id: task-18
 title: Implement ModeratorService with initial agent reply heuristics
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-24 10:14'
-updated_date: '2025-10-24 13:52'
+updated_date: '2025-10-24 13:55'
 labels: []
 dependencies: []
 ---
