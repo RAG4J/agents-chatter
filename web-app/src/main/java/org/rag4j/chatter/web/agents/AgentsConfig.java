@@ -43,6 +43,25 @@ public class AgentsConfig {
     }
 
     @Bean
+    @Profile("starwars-agent")
+    public StarWarsAgent starWarsAgent(ChatModel chatModel,
+                                       ChatMemory chatMemory,
+                                       MessageService messageService,
+                                       PresenceService presenceService) {
+        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, presenceService);
+    }
+
+    @Bean
+    @Profile("startrek-agent")
+    public StarTrekAgent starTrekAgent(ChatModel chatModel,
+                                       ChatMemory chatMemory,
+                                       MessageService messageService,
+                                       PresenceService presenceService) {
+        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, presenceService);
+    }
+
+
+    @Bean
     public ChatMemory chatMemory() {
         return MessageWindowChatMemory.builder().build();
     }
