@@ -1,10 +1,11 @@
 ---
 id: task-16
 title: Extend messaging contracts with conversation metadata
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - codex
 created_date: '2025-10-24 10:13'
-updated_date: '2025-10-24 10:22'
+updated_date: '2025-10-24 10:25'
 labels: []
 dependencies: []
 ---
