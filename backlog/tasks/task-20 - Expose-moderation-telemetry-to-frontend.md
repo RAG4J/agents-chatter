@@ -1,11 +1,11 @@
 ---
 id: task-20
 title: Expose moderation telemetry to frontend
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-24 10:14'
-updated_date: '2025-10-24 14:15'
+updated_date: '2025-10-24 14:16'
 labels: []
 dependencies: []
 ---
