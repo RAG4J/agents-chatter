@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-24 10:13'
-updated_date: '2025-10-24 13:13'
+updated_date: '2025-10-24 13:25'
 labels: []
 dependencies: []
 ---
@@ -55,3 +55,22 @@ Implementation Plan:
    - Extend existing agent/message service tests to exercise the new pipeline (e.g., simulate agent replies exceeding depth, human restart of thread).
    - Update documentation or inline comments to explain the coordinator responsibilities and configuration knobs.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Progress
+- Added `ConversationCoordinator` to enrich `MessageEnvelope` metadata, track thread depth, and block agent replies past the configured limit.
+- Introduced `AgentPublisher` facade and refactored all `SubscriberAgent` derivatives plus `AgentsConfig` wiring to publish through the coordinator instead of calling `MessageService` directly.
+- Routed REST (`MessageController`) and WebSocket (`MessageWebSocketHandler`) ingress through the coordinator so human-authored messages seed thread state consistently.
+- Updated unit tests for agents and added dedicated coordinator coverage; `MessageService` now supports publishing pre-built envelopes.
+
+## Testing
+- `mvn -pl event-bus install` ✅ (rebuilds event-bus for updated MessageEnvelope contract)
+- `mvn -pl web-app test` ⚠️ times out once Spring Boot agent integration tests invoke external OpenAI APIs (expected in sandbox); compilation of new code paths is verified prior to timeout.
+
+## Follow-ups
+- Expose coordinator rejection events to frontend telemetry (task-20) so users see when messages are suppressed.
+- Once ModeratorService (task-18) lands, integrate its checks into the coordinator flow for richer filtering.
+- Consider persistence/expiration strategy for coordinator thread state to avoid unbounded map growth in long-lived deployments.
+<!-- SECTION:NOTES:END -->
