@@ -1,10 +1,11 @@
 ---
 id: task-27
 title: Prepare agent runtime for modular deployment and dynamic registration
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 19:40'
+updated_date: '2025-10-25 19:41'
 labels: []
 dependencies: []
 ---
