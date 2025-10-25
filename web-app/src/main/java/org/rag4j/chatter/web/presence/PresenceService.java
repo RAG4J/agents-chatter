@@ -6,37 +6,49 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.rag4j.chatter.application.port.in.PresencePort;
+import org.rag4j.chatter.application.port.in.PresencePort.PresenceSubscriber;
+import org.rag4j.chatter.application.port.in.PresencePort.PresenceSubscription;
+import org.rag4j.chatter.domain.presence.PresenceParticipant;
+import org.rag4j.chatter.domain.presence.PresenceRole;
+import org.rag4j.chatter.domain.presence.PresenceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 
 @Service
-public class PresenceService {
+public class PresenceService implements PresencePort {
 
     private static final Logger logger = LoggerFactory.getLogger(PresenceService.class);
 
     private final Map<String, PresenceEntry> participants = new ConcurrentHashMap<>();
-    private final Sinks.Many<List<PresenceStatus>> sink = Sinks.many().replay().latest();
+    private final CopyOnWriteArrayList<PresenceSubscriber> subscribers = new CopyOnWriteArrayList<>();
 
     public PresenceService(ChatParticipantsProperties properties) {
         properties.getAgents().forEach(agent -> participants.putIfAbsent(
-            normalize(agent.name()), new PresenceEntry(new PresenceParticipant(agent.name(), agent.role()))));
+                normalize(agent.name()),
+                new PresenceEntry(new PresenceParticipant(agent.name(), agent.role()))));
         var human = properties.getHuman();
-        participants.putIfAbsent(normalize(human.name()), new PresenceEntry(new PresenceParticipant(human.name(), human.role())));
-        emitSnapshot();
+        participants.putIfAbsent(normalize(human.name()),
+                new PresenceEntry(new PresenceParticipant(human.name(), human.role())));
+        notifySubscribers();
     }
 
+    @Override
     public void markOnline(String name, PresenceRole role) {
-        PresenceEntry entry = participants.computeIfAbsent(normalize(name), key -> new PresenceEntry(new PresenceParticipant(name, role)));
+        PresenceEntry entry = participants.computeIfAbsent(
+                normalize(name),
+                key -> new PresenceEntry(new PresenceParticipant(name, role)));
         entry.increment();
         logger.debug("Presence online: {} (count={})", entry.participant().name(), entry.count());
-        emitSnapshot();
+        notifySubscribers();
     }
 
+    @Override
     public void markOffline(String name) {
         PresenceEntry entry = participants.get(normalize(name));
         if (entry == null) {
@@ -44,15 +56,29 @@ public class PresenceService {
         }
         entry.decrement();
         logger.debug("Presence offline event: {} (count={})", entry.participant().name(), entry.count());
-        emitSnapshot();
+        notifySubscribers();
     }
 
+    @Override
     public List<PresenceStatus> snapshot() {
         return currentStatuses();
     }
 
+    @Override
+    public PresenceSubscription subscribe(PresenceSubscriber subscriber) {
+        subscribers.add(subscriber);
+        subscriber.onUpdate(currentStatuses());
+        return () -> subscribers.remove(subscriber);
+    }
+
+    /**
+     * Exposes a Reactor-friendly stream for Web/SSE adapters.
+     */
     public Flux<List<PresenceStatus>> stream() {
-        return sink.asFlux();
+        return Flux.create(emitter -> {
+            PresenceSubscription subscription = subscribe(emitter::next);
+            emitter.onDispose(subscription::close);
+        });
     }
 
     private List<PresenceStatus> currentStatuses() {
@@ -70,8 +96,16 @@ public class PresenceService {
         return Collections.unmodifiableList(statuses);
     }
 
-    private void emitSnapshot() {
-        sink.tryEmitNext(currentStatuses());
+    private void notifySubscribers() {
+        List<PresenceStatus> snapshot = currentStatuses();
+        for (PresenceSubscriber subscriber : subscribers) {
+            try {
+                subscriber.onUpdate(snapshot);
+            }
+            catch (Exception ex) {
+                logger.warn("Presence subscriber threw exception: {}", ex.getMessage(), ex);
+            }
+        }
     }
 
     private static String normalize(String name) {

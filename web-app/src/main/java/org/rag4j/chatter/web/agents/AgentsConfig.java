@@ -2,7 +2,7 @@ package org.rag4j.chatter.web.agents;
 
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
-import org.rag4j.chatter.web.presence.PresenceService;
+import org.rag4j.chatter.application.port.in.PresencePort;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
@@ -19,8 +19,8 @@ public class AgentsConfig {
     public EchoAgent echoAgent(AgentMessageSubscriptionPort subscriptionPort,
                                AgentPublisher agentPublisher,
                                AgentRegistrationUseCase agentRegistry,
-                               PresenceService presenceService) {
-        return new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService);
+                               PresencePort presencePort) {
+        return new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presencePort);
     }
 
     @Bean
@@ -30,9 +30,9 @@ public class AgentsConfig {
                                       AgentMessageSubscriptionPort subscriptionPort,
                                       AgentPublisher agentPublisher,
                                       AgentRegistrationUseCase agentRegistry,
-                                      PresenceService presenceService) {
+                                      PresencePort presencePort) {
 
-        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presenceService);
+        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presencePort);
     }
 
     @Bean
@@ -42,8 +42,8 @@ public class AgentsConfig {
                                                              AgentMessageSubscriptionPort subscriptionPort,
                                                              AgentPublisher agentPublisher,
                                                              AgentRegistrationUseCase agentRegistry,
-                                                             PresenceService presenceService) {
-        return new ApeldoornITScheduleAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService,
+                                                             PresencePort presencePort) {
+        return new ApeldoornITScheduleAgent(subscriptionPort, agentPublisher, agentRegistry, presencePort,
                 ChatClient.builder(chatModel).build(), chatMemory);
     }
 
@@ -54,8 +54,8 @@ public class AgentsConfig {
                                        AgentMessageSubscriptionPort subscriptionPort,
                                        AgentPublisher agentPublisher,
                                        AgentRegistrationUseCase agentRegistry,
-                                       PresenceService presenceService) {
-        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presenceService);
+                                       PresencePort presencePort) {
+        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presencePort);
     }
 
     @Bean
@@ -65,8 +65,8 @@ public class AgentsConfig {
                                        AgentMessageSubscriptionPort subscriptionPort,
                                        AgentPublisher agentPublisher,
                                        AgentRegistrationUseCase agentRegistry,
-                                       PresenceService presenceService) {
-        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presenceService);
+                                       PresencePort presencePort) {
+        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presencePort);
     }
 
     @Bean

@@ -2,8 +2,8 @@ package org.rag4j.chatter.web.agents;
 
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
+import org.rag4j.chatter.application.port.in.PresencePort;
+import org.rag4j.chatter.domain.presence.PresenceRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -25,8 +25,8 @@ public class FootballAgent extends SubscriberAgent {
                          AgentMessageSubscriptionPort subscriptionPort,
                          AgentPublisher agentPublisher,
                          AgentRegistrationUseCase agentRegistry,
-                         PresenceService presenceService) {
-        super(AGENT_NAME, PresenceRole.AGENT, subscriptionPort, agentPublisher, agentRegistry, presenceService);
+                         PresencePort presencePort) {
+        super(AGENT_NAME, PresenceRole.AGENT, subscriptionPort, agentPublisher, agentRegistry, presencePort);
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
     }

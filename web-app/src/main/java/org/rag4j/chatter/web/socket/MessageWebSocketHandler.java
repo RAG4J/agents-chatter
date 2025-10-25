@@ -5,12 +5,12 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.rag4j.chatter.application.messages.PublishResult;
+import org.rag4j.chatter.application.port.in.PresencePort;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceService;
-import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.domain.presence.PresenceRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -36,22 +36,22 @@ public class MessageWebSocketHandler implements WebSocketHandler {
     private final ObjectMapper objectMapper;
     private final MessageService messageService;
     private final ConversationCoordinator conversationCoordinator;
-    private final PresenceService presenceService;
+    private final PresencePort presencePort;
 
     public MessageWebSocketHandler(ObjectMapper objectMapper,
             MessageService messageService,
             ConversationCoordinator conversationCoordinator,
-            PresenceService presenceService) {
+            PresencePort presencePort) {
         this.objectMapper = objectMapper;
         this.messageService = messageService;
         this.conversationCoordinator = conversationCoordinator;
-        this.presenceService = presenceService;
+        this.presencePort = presencePort;
     }
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         String participantName = resolveParticipant(session.getHandshakeInfo().getUri());
-        presenceService.markOnline(participantName, inferRole(participantName));
+        presencePort.markOnline(participantName, inferRole(participantName));
 
         Flux<WebSocketMessage> outbound = messageService.stream()
             .map(MessageDto::from)
@@ -84,7 +84,7 @@ public class MessageWebSocketHandler implements WebSocketHandler {
         Mono<Void> send = session.send(outbound);
 
         return Mono.when(send, receive)
-            .doFinally(signalType -> presenceService.markOffline(participantName));
+            .doFinally(signalType -> presencePort.markOffline(participantName));
     }
 
     private String resolveParticipant(URI uri) {

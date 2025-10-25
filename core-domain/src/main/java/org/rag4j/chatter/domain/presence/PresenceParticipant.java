@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.presence;
+package org.rag4j.chatter.domain.presence;
 
 public record PresenceParticipant(String name, PresenceRole role) {
 }

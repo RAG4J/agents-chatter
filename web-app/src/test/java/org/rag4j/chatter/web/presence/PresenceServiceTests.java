@@ -7,7 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.domain.presence.PresenceRole;
+import org.rag4j.chatter.domain.presence.PresenceStatus;
 
 import reactor.test.StepVerifier;
 

@@ -2,10 +2,10 @@ package org.rag4j.chatter.web.api;
 
 import java.util.List;
 
-import org.rag4j.chatter.web.presence.PresenceParticipant;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
-import org.rag4j.chatter.web.presence.PresenceStatus;
+import org.rag4j.chatter.application.port.in.PresencePort;
+import org.rag4j.chatter.domain.presence.PresenceParticipant;
+import org.rag4j.chatter.domain.presence.PresenceRole;
+import org.rag4j.chatter.domain.presence.PresenceStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,20 +19,24 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/api/presence")
 public class PresenceController {
 
-    private final PresenceService presenceService;
+    private final PresencePort presencePort;
 
-    public PresenceController(PresenceService presenceService) {
-        this.presenceService = presenceService;
+    public PresenceController(PresencePort presencePort) {
+        this.presencePort = presencePort;
     }
 
     @GetMapping
     public List<PresenceDto> listPresence() {
-        return presenceService.snapshot().stream().map(PresenceDto::from).toList();
+        return presencePort.snapshot().stream().map(PresenceDto::from).toList();
     }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<List<PresenceDto>> streamPresence() {
-        return presenceService.stream().map(statuses -> statuses.stream().map(PresenceDto::from).toList());
+        return Flux.<List<PresenceStatus>>create(emitter -> {
+                    PresencePort.PresenceSubscription subscription = presencePort.subscribe(emitter::next);
+                    emitter.onDispose(subscription::close);
+                })
+                .map(statuses -> statuses.stream().map(PresenceDto::from).toList());
     }
 
     public record PresenceDto(String name, PresenceRole role, boolean online, int connections) {

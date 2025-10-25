@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rag4j.chatter.application.messages.ConversationApplicationService;
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
+import org.rag4j.chatter.application.port.in.PresencePort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
@@ -24,7 +25,7 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceService;
+import org.rag4j.chatter.domain.presence.PresenceRole;
 
 import reactor.test.StepVerifier;
 
@@ -32,7 +33,7 @@ class EchoAgentTests {
 
     private MessageBus messageBus;
     private MessageService messageService;
-    private PresenceService presenceService;
+    private PresencePort presencePort;
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private EchoAgent subscriber;
@@ -43,7 +44,7 @@ class EchoAgentTests {
 
     @BeforeEach
     void setUp() {
-        presenceService = mock(PresenceService.class);
+        presencePort = mock(PresencePort.class);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         subscriptionPort = new MessageSubscriptionAdapter(messageService);
@@ -57,7 +58,7 @@ class EchoAgentTests {
                 2);
         conversationCoordinator = new ConversationCoordinator(service);
         agentPublisher = new AgentPublisher(service);
-        subscriber = new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService);
+        subscriber = new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presencePort);
         subscriber.subscribe();
     }
 

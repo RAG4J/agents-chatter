@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rag4j.chatter.application.messages.ConversationApplicationService;
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
+import org.rag4j.chatter.application.port.in.PresencePort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.moderation.AgentMessageContext;
@@ -20,8 +21,7 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
+import org.rag4j.chatter.domain.presence.PresenceRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ class SubscriberAgentPlaceholderTests {
 
     private MessageBus messageBus;
     private MessageService messageService;
-    private PresenceService presenceService;
+    private PresencePort presencePort;
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private TestPlaceholderAgent subscriber;
@@ -43,7 +43,7 @@ class SubscriberAgentPlaceholderTests {
 
     @BeforeEach
     void setUp() {
-        presenceService = mock(PresenceService.class);
+        presencePort = mock(PresencePort.class);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         subscriptionPort = new MessageSubscriptionAdapter(messageService);
@@ -57,7 +57,7 @@ class SubscriberAgentPlaceholderTests {
                 2);
         conversationCoordinator = new ConversationCoordinator(service);
         agentPublisher = new AgentPublisher(service);
-        subscriber = new TestPlaceholderAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService);
+        subscriber = new TestPlaceholderAgent(subscriptionPort, agentPublisher, agentRegistry, presencePort);
         subscriber.subscribe();
     }
 
@@ -85,8 +85,8 @@ class SubscriberAgentPlaceholderTests {
         TestPlaceholderAgent(AgentMessageSubscriptionPort subscriptionPort,
                 AgentPublisher agentPublisher,
                 TestAgentRegistry agentRegistry,
-                PresenceService presenceService) {
-            super(AGENT_NAME, PresenceRole.AGENT, subscriptionPort, agentPublisher, agentRegistry, presenceService);
+                PresencePort presencePort) {
+            super(AGENT_NAME, PresenceRole.AGENT, subscriptionPort, agentPublisher, agentRegistry, presencePort);
         }
 
         @Override

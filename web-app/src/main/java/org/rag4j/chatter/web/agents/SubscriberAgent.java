@@ -4,11 +4,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
+import org.rag4j.chatter.application.port.in.PresencePort;
 import org.rag4j.chatter.domain.agent.AgentDescriptor;
 import org.rag4j.chatter.domain.agent.AgentDescriptor.AgentType;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
+import org.rag4j.chatter.domain.presence.PresenceRole;
 import org.slf4j.Logger;
 
 import reactor.core.publisher.Mono;
@@ -20,7 +20,7 @@ public abstract class SubscriberAgent {
     private final AgentMessageSubscriptionPort subscriptionPort;
     private final AgentPublisher agentPublisher;
     private final AgentRegistrationUseCase agentRegistry;
-    private final PresenceService presenceService;
+    private final PresencePort presencePort;
     private final String agentName;
     private final PresenceRole role;
     private final AgentDescriptor descriptor;
@@ -31,11 +31,11 @@ public abstract class SubscriberAgent {
             AgentMessageSubscriptionPort subscriptionPort,
             AgentPublisher agentPublisher,
             AgentRegistrationUseCase agentRegistry,
-            PresenceService presenceService) {
+            PresencePort presencePort) {
         this.subscriptionPort = subscriptionPort;
         this.agentPublisher = agentPublisher;
         this.agentRegistry = agentRegistry;
-        this.presenceService = presenceService;
+        this.presencePort = presencePort;
         this.agentName = agentName;
         this.role = role;
         this.descriptor = new AgentDescriptor(agentName, agentName, AgentType.EMBEDDED, "");
@@ -44,8 +44,8 @@ public abstract class SubscriberAgent {
     @PostConstruct
     public void subscribe() {
         logger().info("Registering {} subscriber", agentName);
-        if (presenceService != null) {
-            presenceService.markOnline(agentName, role);
+        if (presencePort != null) {
+            presencePort.markOnline(agentName, role);
         }
         if (agentRegistry != null) {
             agentRegistry.register(descriptor);
@@ -59,8 +59,8 @@ public abstract class SubscriberAgent {
             subscription.close();
         }
         logger().info("{} subscriber disposed", agentName);
-        if (presenceService != null) {
-            presenceService.markOffline(agentName);
+        if (presencePort != null) {
+            presencePort.markOffline(agentName);
         }
         if (agentRegistry != null) {
             agentRegistry.unregister(agentName);
