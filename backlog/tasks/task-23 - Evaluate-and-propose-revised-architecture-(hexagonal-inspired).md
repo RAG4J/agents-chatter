@@ -1,9 +1,11 @@
 ---
 id: task-23
 title: Evaluate and propose revised architecture (hexagonal-inspired)
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - codex
 created_date: '2025-10-25 08:38'
+updated_date: '2025-10-25 08:43'
 labels: []
 dependencies: []
 ---
