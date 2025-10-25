@@ -1,7 +1,7 @@
 ---
 id: task-24
 title: Extract core-domain module for messaging and moderation policies
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-25 10:34'
