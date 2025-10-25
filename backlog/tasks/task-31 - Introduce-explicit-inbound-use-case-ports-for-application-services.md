@@ -1,10 +1,11 @@
 ---
 id: task-31
 title: Introduce explicit inbound use-case ports for application services
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 22:24'
+updated_date: '2025-10-25 22:31'
 labels:
   - architecture
   - hexagonal
