@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 22:17'
+updated_date: '2025-10-25 22:22'
 labels:
   - architecture
   - messaging
@@ -43,3 +43,9 @@ Refactor application services and agents to depend solely on the new port contra
 
 Update tests and documentation to reflect the new messaging port design, adding coverage for the converted stream adapters.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Introduced non-Reactor `MessageStreamPort` in application-services. Updated `MessageService` to implement the new port alongside `MessagePublicationPort`, managing subscribers internally and exposing history without returning Flux. Added a `MessageStreamFluxAdapter` for WebFlux consumers and rewired WebSocket handler, REST controller, and agent subscription adapter to depend on the port. Adjusted agent tests to use the adapter and reran module tests.
+<!-- SECTION:NOTES:END -->
