@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 19:41'
+updated_date: '2025-10-25 20:19'
 labels: []
 dependencies: []
 ---
@@ -49,3 +49,10 @@ Implementation Plan:
    - Write unit tests for the registry to confirm dynamic registration works.
    - Execute smoke tests with the in-memory registry to ensure agents continue to function.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implemented application-layer ports (`AgentRegistrationPort`, `AgentMessagingPort`, moderation abstractions) and wired them through the new `application-services` module. Embedded agents now depend on the `AgentMessagingCallback` port via `AgentPublisher` and register/deregister through `AgentRegistryService`.
+Added in-memory adapters and REST controllers for dynamic agent registration (`/api/agents`) and message submission (`/api/agents/{agentName}/messages`); remote agents can publish messages with moderation feedback. Added `docs/agent-runtime.md` describing integration flows. New unit/integration coverage (`AgentRegistryServiceTests`, extended `MessageApiTests`) and Maven build is green.
+<!-- SECTION:NOTES:END -->
