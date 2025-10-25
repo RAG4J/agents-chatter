@@ -24,10 +24,10 @@ Refine the messaging-related ports so the application layer does not expose Reac
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 No application-service class exposes Reactor types directly; ports use domain or Java types.
-- [ ] #2 MessageService (or replacement adapter) implements the updated port(s) and confines Reactor usage to infrastructure layer.
-- [ ] #3 Embedded agents and controllers consume the new abstractions without referencing Reactor APIs.
-- [ ] #4 Regression tests updated to cover the revised contracts.
+- [x] #1 No application-service class exposes Reactor types directly; ports use domain or Java types.
+- [x] #2 MessageService (or replacement adapter) implements the updated port(s) and confines Reactor usage to infrastructure layer.
+- [x] #3 Embedded agents and controllers consume the new abstractions without referencing Reactor APIs.
+- [x] #4 Regression tests updated to cover the revised contracts.
 <!-- AC:END -->
 
 ## Implementation Plan
