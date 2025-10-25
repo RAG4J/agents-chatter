@@ -25,9 +25,9 @@ Out of scope: full implementation of remote agent processes or network security;
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Agent registration and messaging ports are defined and integrated into the application layer.
-- [ ] #2 A registry or service manages agent lifecycle events (register/unregister) and is consumed by existing agents.
-- [ ] #3 Documentation outlines how external agents would integrate using the defined ports and communication protocol.
+- [x] #1 Agent registration and messaging ports are defined and integrated into the application layer.
+- [x] #2 A registry or service manages agent lifecycle events (register/unregister) and is consumed by existing agents.
+- [x] #3 Documentation outlines how external agents would integrate using the defined ports and communication protocol.
 <!-- AC:END -->
 
 ## Implementation Plan
