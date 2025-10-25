@@ -2,42 +2,43 @@ package org.rag4j.chatter.web.agents;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
 import org.rag4j.chatter.domain.agent.AgentDescriptor;
 import org.rag4j.chatter.domain.agent.AgentDescriptor.AgentType;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
-import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 
-import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
 public abstract class SubscriberAgent {
 
     public static final String NO_MESSAGE_PLACEHOLDER = "#nothingtosay#";
 
-    private final MessageService messageService;
+    private final AgentMessageSubscriptionPort subscriptionPort;
     private final AgentPublisher agentPublisher;
     private final AgentRegistrationUseCase agentRegistry;
     private final PresenceService presenceService;
     private final String agentName;
     private final PresenceRole role;
-    private Disposable subscription;
+    private final AgentDescriptor descriptor;
+    private AgentMessageSubscriptionPort.AgentSubscription subscription;
 
     public SubscriberAgent(String agentName,
             PresenceRole role,
-            MessageService messageService,
+            AgentMessageSubscriptionPort subscriptionPort,
             AgentPublisher agentPublisher,
             AgentRegistrationUseCase agentRegistry,
             PresenceService presenceService) {
-        this.messageService = messageService;
+        this.subscriptionPort = subscriptionPort;
         this.agentPublisher = agentPublisher;
         this.agentRegistry = agentRegistry;
         this.presenceService = presenceService;
         this.agentName = agentName;
         this.role = role;
+        this.descriptor = new AgentDescriptor(agentName, agentName, AgentType.EMBEDDED, "");
     }
 
     @PostConstruct
@@ -47,19 +48,15 @@ public abstract class SubscriberAgent {
             presenceService.markOnline(agentName, role);
         }
         if (agentRegistry != null) {
-            agentRegistry.register(new AgentDescriptor(agentName, agentName, AgentType.EMBEDDED, ""));
+            agentRegistry.register(descriptor);
         }
-        subscription = messageService.stream()
-                .doOnNext(e -> logger().info("Received message from {}", e.author()))
-                .filter(envelope -> !isOwnMessage(envelope))
-                .doOnNext(this::publishResponse)
-                .subscribe();
+        subscription = subscriptionPort.subscribe(descriptor, this::handleIncomingMessage);
     }
 
     @PreDestroy
     public void shutdown() {
-        if (subscription != null && !subscription.isDisposed()) {
-            subscription.dispose();
+        if (subscription != null) {
+            subscription.close();
         }
         logger().info("{} subscriber disposed", agentName);
         if (presenceService != null) {
@@ -68,6 +65,14 @@ public abstract class SubscriberAgent {
         if (agentRegistry != null) {
             agentRegistry.unregister(agentName);
         }
+    }
+
+    private void handleIncomingMessage(MessageEnvelope envelope) {
+        logger().info("Received message from {}", envelope.author());
+        if (isOwnMessage(envelope)) {
+            return;
+        }
+        publishResponse(envelope);
     }
 
     protected void publishResponse(MessageEnvelope incoming) {

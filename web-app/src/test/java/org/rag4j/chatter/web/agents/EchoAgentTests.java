@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rag4j.chatter.application.messages.ConversationApplicationService;
+import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
@@ -35,6 +36,7 @@ class EchoAgentTests {
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private EchoAgent subscriber;
+    private AgentMessageSubscriptionPort subscriptionPort;
     private TestAgentRegistry agentRegistry;
     private TestModeratorService moderatorService;
     private TestEventPublisher eventPublisher;
@@ -44,6 +46,7 @@ class EchoAgentTests {
         presenceService = mock(PresenceService.class);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
+        subscriptionPort = new MessageSubscriptionAdapter(messageService);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
         agentRegistry = new TestAgentRegistry();
@@ -54,7 +57,7 @@ class EchoAgentTests {
                 2);
         conversationCoordinator = new ConversationCoordinator(service);
         agentPublisher = new AgentPublisher(service);
-        subscriber = new EchoAgent(messageService, agentPublisher, agentRegistry, presenceService);
+        subscriber = new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService);
         subscriber.subscribe();
     }
 

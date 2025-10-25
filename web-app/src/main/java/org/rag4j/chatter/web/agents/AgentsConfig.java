@@ -1,7 +1,7 @@
 package org.rag4j.chatter.web.agents;
 
+import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
-import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -16,34 +16,34 @@ public class AgentsConfig {
 
     @Bean
     @Profile("echo-agent")
-    public EchoAgent echoAgent(MessageService messageService,
+    public EchoAgent echoAgent(AgentMessageSubscriptionPort subscriptionPort,
                                AgentPublisher agentPublisher,
                                AgentRegistrationUseCase agentRegistry,
                                PresenceService presenceService) {
-        return new EchoAgent(messageService, agentPublisher, agentRegistry, presenceService);
+        return new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean
     @Profile("football-agent")
     public FootballAgent footballAgent(ChatModel chatModel,
                                       ChatMemory chatMemory,
-                                      MessageService messageService,
+                                      AgentMessageSubscriptionPort subscriptionPort,
                                       AgentPublisher agentPublisher,
                                       AgentRegistrationUseCase agentRegistry,
                                       PresenceService presenceService) {
 
-        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, agentRegistry, presenceService);
+        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean
     @Profile("apeldoornit-agent")
     public ApeldoornITScheduleAgent apeldoornITScheduleAgent(ChatModel chatModel,
                                                              ChatMemory chatMemory,
-                                                             MessageService messageService,
+                                                             AgentMessageSubscriptionPort subscriptionPort,
                                                              AgentPublisher agentPublisher,
                                                              AgentRegistrationUseCase agentRegistry,
                                                              PresenceService presenceService) {
-        return new ApeldoornITScheduleAgent(messageService, agentPublisher, agentRegistry, presenceService,
+        return new ApeldoornITScheduleAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService,
                 ChatClient.builder(chatModel).build(), chatMemory);
     }
 
@@ -51,22 +51,22 @@ public class AgentsConfig {
     @Profile("starwars-agent")
     public StarWarsAgent starWarsAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
-                                       MessageService messageService,
+                                       AgentMessageSubscriptionPort subscriptionPort,
                                        AgentPublisher agentPublisher,
                                        AgentRegistrationUseCase agentRegistry,
                                        PresenceService presenceService) {
-        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, agentRegistry, presenceService);
+        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean
     @Profile("startrek-agent")
     public StarTrekAgent starTrekAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
-                                       MessageService messageService,
+                                       AgentMessageSubscriptionPort subscriptionPort,
                                        AgentPublisher agentPublisher,
                                        AgentRegistrationUseCase agentRegistry,
                                        PresenceService presenceService) {
-        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, agentRegistry, presenceService);
+        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, subscriptionPort, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean

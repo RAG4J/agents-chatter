@@ -1,7 +1,7 @@
 package org.rag4j.chatter.web.agents;
 
+import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
-import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
@@ -21,13 +21,13 @@ public class ApeldoornITScheduleAgent extends SubscriberAgent {
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
 
-    public ApeldoornITScheduleAgent(MessageService messageService,
+    public ApeldoornITScheduleAgent(AgentMessageSubscriptionPort subscriptionPort,
                                     AgentPublisher agentPublisher,
                                     AgentRegistrationUseCase agentRegistry,
                                     PresenceService presenceService,
                                     ChatClient chatClient,
                                     ChatMemory chatMemory) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, agentRegistry, presenceService);
+        super(AGENT_NAME, PresenceRole.AGENT, subscriptionPort, agentPublisher, agentRegistry, presenceService);
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
     }

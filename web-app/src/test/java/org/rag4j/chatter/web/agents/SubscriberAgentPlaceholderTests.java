@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rag4j.chatter.application.messages.ConversationApplicationService;
+import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.moderation.AgentMessageContext;
@@ -35,6 +36,7 @@ class SubscriberAgentPlaceholderTests {
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private TestPlaceholderAgent subscriber;
+    private AgentMessageSubscriptionPort subscriptionPort;
     private TestModeratorService moderatorService;
     private TestEventPublisher eventPublisher;
     private TestAgentRegistry agentRegistry;
@@ -44,6 +46,7 @@ class SubscriberAgentPlaceholderTests {
         presenceService = mock(PresenceService.class);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
+        subscriptionPort = new MessageSubscriptionAdapter(messageService);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
         agentRegistry = new TestAgentRegistry();
@@ -54,7 +57,7 @@ class SubscriberAgentPlaceholderTests {
                 2);
         conversationCoordinator = new ConversationCoordinator(service);
         agentPublisher = new AgentPublisher(service);
-        subscriber = new TestPlaceholderAgent(messageService, agentPublisher, agentRegistry, presenceService);
+        subscriber = new TestPlaceholderAgent(subscriptionPort, agentPublisher, agentRegistry, presenceService);
         subscriber.subscribe();
     }
 
@@ -79,11 +82,11 @@ class SubscriberAgentPlaceholderTests {
         private static final Logger logger = LoggerFactory.getLogger(TestPlaceholderAgent.class);
         private static final String AGENT_NAME = "Placeholder Agent";
 
-        TestPlaceholderAgent(MessageService messageService,
+        TestPlaceholderAgent(AgentMessageSubscriptionPort subscriptionPort,
                 AgentPublisher agentPublisher,
                 TestAgentRegistry agentRegistry,
                 PresenceService presenceService) {
-            super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, agentRegistry, presenceService);
+            super(AGENT_NAME, PresenceRole.AGENT, subscriptionPort, agentPublisher, agentRegistry, presenceService);
         }
 
         @Override
