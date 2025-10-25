@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-25 10:34'
-updated_date: '2025-10-25 17:44'
+updated_date: '2025-10-25 17:45'
 labels: []
 dependencies: []
 ---
@@ -50,3 +50,12 @@ Implementation Plan:
    - Create unit tests in `core-domain` covering moderation depth rules and basic value object invariants.
    - Update module README or inline docs explaining the purpose of `core-domain` and guidelines for keeping it framework-free.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+### Progress (initial)
+- Added `core-domain` Maven module to parent build with JUnit-only dependencies.
+- Created initial package structure and README describing domain-only guidelines.
+- Next: move `MessageEnvelope`, `ModerationEvent`, and related rules into the new module and update downstream modules.
+<!-- SECTION:NOTES:END -->
