@@ -1,10 +1,11 @@
 ---
 id: task-25
 title: Introduce application service layer with explicit ports
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 18:55'
+updated_date: '2025-10-25 18:58'
 labels: []
 dependencies: []
 ---
