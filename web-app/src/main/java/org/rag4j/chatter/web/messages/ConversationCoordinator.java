@@ -10,6 +10,8 @@ import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
 import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.moderation.AgentMessageContext;
 import org.rag4j.chatter.web.moderation.ModerationDecision;
+import org.rag4j.chatter.web.moderation.ModerationEvent;
+import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,18 +30,21 @@ public class ConversationCoordinator {
     private final MessageService messageService;
     private final int maxAgentDepth;
     private final ModeratorService moderatorService;
+    private final ModerationEventPublisher eventPublisher;
     private final ConcurrentMap<UUID, ThreadState> threads = new ConcurrentHashMap<>();
 
     public ConversationCoordinator(
             MessageService messageService,
             @Value("${conversation.max-agent-depth:2}") int maxAgentDepth,
-            ModeratorService moderatorService) {
+            ModeratorService moderatorService,
+            ModerationEventPublisher eventPublisher) {
         if (maxAgentDepth < 1) {
             throw new IllegalArgumentException("conversation.max-agent-depth must be >= 1");
         }
         this.messageService = messageService;
         this.maxAgentDepth = maxAgentDepth;
         this.moderatorService = moderatorService;
+        this.eventPublisher = eventPublisher;
     }
 
     public PublishResult handlePublish(PublishRequest request) {
@@ -59,6 +64,13 @@ public class ConversationCoordinator {
 
         if (request.originType() == MessageOrigin.AGENT && nextDepth > maxAgentDepth) {
             logger.info("Blocking agent response for {} due to depth {} > {}", request.author(), nextDepth, maxAgentDepth);
+            eventPublisher.publish(ModerationEvent.rejection(
+                    threadId,
+                    request.author(),
+                    "Agent reply depth exceeded maximum of " + maxAgentDepth,
+                    Instant.now(),
+                    Optional.ofNullable(request.payload()).map(String::trim).filter(s -> !s.isBlank()),
+                    Optional.of(nextDepth)));
             return PublishResult.rejected(threadId, nextDepth,
                     "Agent reply depth exceeded maximum of " + maxAgentDepth);
         }

@@ -14,6 +14,8 @@ import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.moderation.ModerationDecision;
+import org.rag4j.chatter.web.moderation.ModerationEvent;
+import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
@@ -32,6 +34,7 @@ class SubscriberAgentPlaceholderTests {
     private AgentPublisher agentPublisher;
     private TestPlaceholderAgent subscriber;
     private TestModeratorService moderatorService;
+    private TestEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -39,7 +42,8 @@ class SubscriberAgentPlaceholderTests {
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         moderatorService = new TestModeratorService();
-        conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService);
+        eventPublisher = new TestEventPublisher();
+        conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
         agentPublisher = new AgentPublisher(conversationCoordinator);
         subscriber = new TestPlaceholderAgent(messageService, agentPublisher, presenceService);
         subscriber.subscribe();
@@ -89,6 +93,19 @@ class SubscriberAgentPlaceholderTests {
         @Override
         public ModerationDecision evaluate(org.rag4j.chatter.web.moderation.AgentMessageContext context) {
             return delegate.apply(context);
+        }
+    }
+
+    private static final class TestEventPublisher extends ModerationEventPublisher {
+        private final java.util.List<ModerationEvent> events = new java.util.ArrayList<>();
+
+        @Override
+        public void publish(ModerationEvent event) {
+            events.add(event);
+        }
+
+        java.util.List<ModerationEvent> events() {
+            return events;
         }
     }
 }

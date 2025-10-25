@@ -10,6 +10,8 @@ import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
 import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.moderation.ModerationDecision;
+import org.rag4j.chatter.web.moderation.ModerationEvent;
+import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.moderation.ModeratorService;
 
 class ConversationCoordinatorTests {
@@ -17,12 +19,14 @@ class ConversationCoordinatorTests {
     private MessageService messageService;
     private ConversationCoordinator coordinator;
     private ModeratorService moderatorService;
+    private TestEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
         messageService = new MessageService(new ReactorMessageBus());
         moderatorService = context -> ModerationDecision.approve();
-        coordinator = new ConversationCoordinator(messageService, 2, moderatorService);
+        eventPublisher = new TestEventPublisher();
+        coordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
     }
 
     @Test
@@ -74,5 +78,19 @@ class ConversationCoordinatorTests {
         ConversationCoordinator.PublishResult.Rejected rejected = (ConversationCoordinator.PublishResult.Rejected) blocked;
         assertThat(rejected.attemptedDepth()).isEqualTo(3);
         assertThat(rejected.reason()).contains("Agent reply depth exceeded");
+        assertThat(eventPublisher.events()).hasSize(1);
+    }
+
+    private static final class TestEventPublisher extends ModerationEventPublisher {
+        private final java.util.List<ModerationEvent> events = new java.util.ArrayList<>();
+
+        @Override
+        public void publish(ModerationEvent event) {
+            events.add(event);
+        }
+
+        java.util.List<ModerationEvent> events() {
+            return events;
+        }
     }
 }

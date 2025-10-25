@@ -10,7 +10,7 @@ public class ModeratorProperties {
     /**
      * Minimum delay between successive messages from the same agent.
      */
-    private Duration agentCooldown = Duration.ofSeconds(5);
+    private Duration agentCooldown = Duration.ofMillis(5);
 
     /**
      * Number of recent payloads per thread to remember for duplicate detection.

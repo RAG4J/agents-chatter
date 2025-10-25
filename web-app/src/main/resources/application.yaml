@@ -14,3 +14,8 @@ spring:
 logging:
   level:
     org.rag4j.chatter: INFO
+moderator:
+  loop-alternations-threshold: 4
+  agent-cooldown: 1
+conversation:
+  max-agent-depth: 4
