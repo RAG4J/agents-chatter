@@ -11,14 +11,15 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.domain.moderation.AgentMessageContext;
+import org.rag4j.chatter.domain.moderation.ModerationDecision;
+import org.rag4j.chatter.domain.moderation.ModerationEvent;
 import org.rag4j.chatter.eventbus.bus.MessageBus;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.moderation.ModerationDecision;
-import org.rag4j.chatter.web.moderation.ModerationEvent;
 import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.rag4j.chatter.web.presence.PresenceService;
@@ -57,15 +58,15 @@ class EchoAgentTests {
     @Test
     void echoesMessagesFromOtherAuthors() {
         StepVerifier.create(
-                messageService.stream()
-                    .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
-                    .map(MessageEnvelope::payload)
-                    .take(1))
-            .then(() -> conversationCoordinator.handlePublish(
-                ConversationCoordinator.PublishRequest.forHuman("User", "Hello from user", Optional.empty())))
-            .assertNext(payload -> assertThat(payload).isEqualTo("echo Hello from user"))
-            .expectComplete()
-            .verify(Duration.ofSeconds(1));
+                        messageService.stream()
+                                .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
+                                .map(MessageEnvelope::payload)
+                                .take(1))
+                .then(() -> conversationCoordinator.handlePublish(
+                        ConversationCoordinator.PublishRequest.forHuman("User", "Hello from user", Optional.empty())))
+                .assertNext(payload -> assertThat(payload).isEqualTo("echo Hello from user"))
+                .expectComplete()
+                .verify(Duration.ofSeconds(1));
     }
 
     @Test
@@ -108,23 +109,23 @@ class EchoAgentTests {
         StepVerifier.create(
                         messageService.stream()
                                 .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
-                                .skip(1) // skip the initial self-published message
+                                .skip(1)
                                 .take(1))
                 .then(() -> messageService.publish(EchoAgent.AGENT_NAME, "echo recursion?"))
                 .expectTimeout(Duration.ofMillis(200))
                 .verify();
     }
+
     private static final class TestModeratorService implements ModeratorService {
 
-        private Function<org.rag4j.chatter.web.moderation.AgentMessageContext, ModerationDecision> delegate =
-                context -> ModerationDecision.approve();
+        private Function<AgentMessageContext, ModerationDecision> delegate = context -> ModerationDecision.approve();
 
-        void setDelegate(Function<org.rag4j.chatter.web.moderation.AgentMessageContext, ModerationDecision> delegate) {
+        void setDelegate(Function<AgentMessageContext, ModerationDecision> delegate) {
             this.delegate = delegate;
         }
 
         @Override
-        public ModerationDecision evaluate(org.rag4j.chatter.web.moderation.AgentMessageContext context) {
+        public ModerationDecision evaluate(AgentMessageContext context) {
             return delegate.apply(context);
         }
     }

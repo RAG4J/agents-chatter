@@ -1,4 +1,4 @@
-package org.rag4j.chatter.eventbus.bus;
+package org.rag4j.chatter.domain.message;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -6,8 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Minimal message representation shared between publishers and subscribers.
- * Can be replaced by richer domain objects once the chat-domain module lands.
+ * Immutable representation of a chat message within the domain.
  */
 public record MessageEnvelope(
         UUID id,
@@ -25,7 +24,6 @@ public record MessageEnvelope(
         Objects.requireNonNull(payload, "payload must not be null");
         Objects.requireNonNull(createdAt, "createdAt must not be null");
         Objects.requireNonNull(threadId, "threadId must not be null");
-        Objects.requireNonNull(parentMessageId, "parentMessageId must not be null");
         Objects.requireNonNull(originType, "originType must not be null");
         if (agentReplyDepth < 0) {
             throw new IllegalArgumentException("agentReplyDepth must be >= 0");
@@ -59,7 +57,7 @@ public record MessageEnvelope(
                 payload,
                 Instant.now(),
                 Objects.requireNonNull(threadId, "threadId must not be null"),
-                Objects.requireNonNull(parentMessageId, "parentMessageId must not be null"),
+                parentMessageId,
                 Objects.requireNonNull(originType, "originType must not be null"),
                 agentReplyDepth);
     }

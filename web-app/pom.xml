@@ -17,6 +17,10 @@
     <dependencies>
         <dependency>
             <groupId>org.rag4j.chatter</groupId>
+            <artifactId>core-domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.rag4j.chatter</groupId>
             <artifactId>event-bus</artifactId>
         </dependency>
 

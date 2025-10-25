@@ -3,7 +3,7 @@ package org.rag4j.chatter.web.agents;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.ConversationCoordinator.PublishResult;
 import org.slf4j.Logger;

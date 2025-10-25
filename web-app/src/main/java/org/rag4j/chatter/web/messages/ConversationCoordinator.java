@@ -6,11 +6,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
-import org.rag4j.chatter.web.moderation.AgentMessageContext;
-import org.rag4j.chatter.web.moderation.ModerationDecision;
-import org.rag4j.chatter.web.moderation.ModerationEvent;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.domain.moderation.AgentMessageContext;
+import org.rag4j.chatter.domain.moderation.ModerationDecision;
+import org.rag4j.chatter.domain.moderation.ModerationEvent;
 import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.slf4j.Logger;

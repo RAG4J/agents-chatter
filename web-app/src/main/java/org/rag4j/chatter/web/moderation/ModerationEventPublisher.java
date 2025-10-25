@@ -1,5 +1,6 @@
 package org.rag4j.chatter.web.moderation;
 
+import org.rag4j.chatter.domain.moderation.ModerationEvent;
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Flux;

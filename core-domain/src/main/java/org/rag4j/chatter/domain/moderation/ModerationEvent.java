@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.moderation;
+package org.rag4j.chatter.domain.moderation;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -18,16 +18,21 @@ public record ModerationEvent(
         Objects.requireNonNull(agent, "agent must not be null");
         Objects.requireNonNull(rationale, "rationale must not be null");
         Objects.requireNonNull(occurredAt, "occurredAt must not be null");
-        messagePreview = messagePreview == null ? Optional.empty() : messagePreview;
-        attemptedDepth = attemptedDepth == null ? Optional.empty() : attemptedDepth;
     }
 
-    public static ModerationEvent rejection(UUID threadId,
+    public static ModerationEvent rejection(
+            UUID threadId,
             String agent,
             String rationale,
             Instant occurredAt,
             Optional<String> messagePreview,
             Optional<Integer> attemptedDepth) {
-        return new ModerationEvent(threadId, agent, rationale, occurredAt, messagePreview, attemptedDepth);
+        return new ModerationEvent(
+                threadId,
+                agent,
+                rationale,
+                occurredAt,
+                messagePreview,
+                attemptedDepth);
     }
 }

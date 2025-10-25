@@ -1,9 +1,9 @@
-package org.rag4j.chatter.web.moderation;
+package org.rag4j.chatter.domain.moderation;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
 
 public record AgentMessageContext(
         String agentName,
@@ -23,8 +23,6 @@ public record AgentMessageContext(
         if (threadId == null) {
             throw new IllegalArgumentException("threadId must not be null");
         }
-        parentMessageId = parentMessageId == null ? Optional.empty() : parentMessageId;
-        parentMessage = parentMessage == null ? Optional.empty() : parentMessage;
         if (agentReplyDepth < 0) {
             throw new IllegalArgumentException("agentReplyDepth must be >= 0");
         }

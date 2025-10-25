@@ -2,11 +2,12 @@ package org.rag4j.chatter.web.agents;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
+
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 

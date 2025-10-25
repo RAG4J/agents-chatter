@@ -2,8 +2,8 @@ package org.rag4j.chatter.web.agents;
 
 import java.time.Duration;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;

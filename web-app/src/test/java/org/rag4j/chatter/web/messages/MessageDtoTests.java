@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.domain.message.MessageEnvelope;
+import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;

@@ -9,12 +9,13 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rag4j.chatter.domain.moderation.AgentMessageContext;
+import org.rag4j.chatter.domain.moderation.ModerationDecision;
+import org.rag4j.chatter.domain.moderation.ModerationEvent;
 import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.moderation.ModerationDecision;
-import org.rag4j.chatter.web.moderation.ModerationEvent;
 import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.rag4j.chatter.web.presence.PresenceRole;
@@ -87,11 +88,14 @@ class SubscriberAgentPlaceholderTests {
 
     private static final class TestModeratorService implements ModeratorService {
 
-        private Function<org.rag4j.chatter.web.moderation.AgentMessageContext, ModerationDecision> delegate =
-                context -> ModerationDecision.approve();
+        private Function<AgentMessageContext, ModerationDecision> delegate = context -> ModerationDecision.approve();
+
+        void setDelegate(Function<AgentMessageContext, ModerationDecision> delegate) {
+            this.delegate = delegate;
+        }
 
         @Override
-        public ModerationDecision evaluate(org.rag4j.chatter.web.moderation.AgentMessageContext context) {
+        public ModerationDecision evaluate(AgentMessageContext context) {
             return delegate.apply(context);
         }
     }

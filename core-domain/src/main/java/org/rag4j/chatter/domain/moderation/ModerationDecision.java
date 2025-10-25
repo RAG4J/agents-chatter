@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.moderation;
+package org.rag4j.chatter.domain.moderation;
 
 import java.util.Optional;
 
@@ -7,10 +7,6 @@ public record ModerationDecision(Status status, Optional<String> payloadOverride
     public enum Status {
         APPROVE,
         REJECT
-    }
-
-    public ModerationDecision {
-        payloadOverride = payloadOverride == null ? Optional.empty() : payloadOverride;
     }
 
     public static ModerationDecision approve() {
