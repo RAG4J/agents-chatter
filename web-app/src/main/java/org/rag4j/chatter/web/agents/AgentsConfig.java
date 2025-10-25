@@ -1,14 +1,12 @@
 package org.rag4j.chatter.web.agents;
 
+import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -18,19 +16,23 @@ public class AgentsConfig {
 
     @Bean
     @Profile("echo-agent")
-    public EchoAgent echoAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-        return new EchoAgent(messageService, agentPublisher, presenceService);
+    public EchoAgent echoAgent(MessageService messageService,
+                               AgentPublisher agentPublisher,
+                               AgentRegistrationUseCase agentRegistry,
+                               PresenceService presenceService) {
+        return new EchoAgent(messageService, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean
     @Profile("football-agent")
     public FootballAgent footballAgent(ChatModel chatModel,
-                                       ChatMemory chatMemory,
-                                       MessageService messageService,
-                                       AgentPublisher agentPublisher,
-                                       PresenceService presenceService) {
+                                      ChatMemory chatMemory,
+                                      MessageService messageService,
+                                      AgentPublisher agentPublisher,
+                                      AgentRegistrationUseCase agentRegistry,
+                                      PresenceService presenceService) {
 
-        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
+        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean
@@ -39,8 +41,9 @@ public class AgentsConfig {
                                                              ChatMemory chatMemory,
                                                              MessageService messageService,
                                                              AgentPublisher agentPublisher,
+                                                             AgentRegistrationUseCase agentRegistry,
                                                              PresenceService presenceService) {
-        return new ApeldoornITScheduleAgent(messageService, agentPublisher, presenceService,
+        return new ApeldoornITScheduleAgent(messageService, agentPublisher, agentRegistry, presenceService,
                 ChatClient.builder(chatModel).build(), chatMemory);
     }
 
@@ -50,8 +53,9 @@ public class AgentsConfig {
                                        ChatMemory chatMemory,
                                        MessageService messageService,
                                        AgentPublisher agentPublisher,
+                                       AgentRegistrationUseCase agentRegistry,
                                        PresenceService presenceService) {
-        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
+        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, agentRegistry, presenceService);
     }
 
     @Bean
@@ -60,10 +64,10 @@ public class AgentsConfig {
                                        ChatMemory chatMemory,
                                        MessageService messageService,
                                        AgentPublisher agentPublisher,
+                                       AgentRegistrationUseCase agentRegistry,
                                        PresenceService presenceService) {
-        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
+        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, agentRegistry, presenceService);
     }
-
 
     @Bean
     public ChatMemory chatMemory() {

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.rag4j.chatter.application.messages.PublishResult;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
@@ -69,7 +70,7 @@ public class MessageWebSocketHandler implements WebSocketHandler {
                                     Optional.empty(),
                                     Optional.empty()))))
             .doOnNext(result -> {
-                if (result instanceof ConversationCoordinator.PublishResult.Rejected rejected) {
+                if (result instanceof PublishResult.Rejected rejected) {
                     // Rely on separate telemetry channel for user feedback; for now just log.
                     logger.info(
                             "Dropping websocket message for thread {} at depth {}: {}",

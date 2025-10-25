@@ -1,5 +1,6 @@
 package org.rag4j.chatter.web.moderation;
 
+import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.domain.moderation.ModerationEvent;
 import org.springframework.stereotype.Component;
 
@@ -7,10 +8,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 @Component
-public class ModerationEventPublisher {
+public class ModerationEventPublisher implements ModerationEventPort {
 
     private final Sinks.Many<ModerationEvent> sink = Sinks.many().multicast().onBackpressureBuffer();
 
+    @Override
     public void publish(ModerationEvent event) {
         sink.tryEmitNext(event);
     }

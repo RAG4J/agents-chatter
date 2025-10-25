@@ -10,43 +10,34 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>web-app</artifactId>
-    <name>Agents Chatter :: Web App</name>
-    <packaging>jar</packaging>
+    <artifactId>application-services</artifactId>
+    <name>Agents Chatter :: Application Services</name>
+    <description>Application layer services and ports coordinating domain behaviour</description>
 
     <dependencies>
         <dependency>
             <groupId>org.rag4j.chatter</groupId>
-            <artifactId>application-services</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.rag4j.chatter</groupId>
             <artifactId>core-domain</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.rag4j.chatter</groupId>
-            <artifactId>event-bus</artifactId>
-        </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-model-openai</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -54,10 +45,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

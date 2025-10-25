@@ -2,6 +2,9 @@ package org.rag4j.chatter.web.agents;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
+import org.rag4j.chatter.domain.agent.AgentDescriptor;
+import org.rag4j.chatter.domain.agent.AgentDescriptor.AgentType;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
@@ -17,6 +20,7 @@ public abstract class SubscriberAgent {
 
     private final MessageService messageService;
     private final AgentPublisher agentPublisher;
+    private final AgentRegistrationUseCase agentRegistry;
     private final PresenceService presenceService;
     private final String agentName;
     private final PresenceRole role;
@@ -26,9 +30,11 @@ public abstract class SubscriberAgent {
             PresenceRole role,
             MessageService messageService,
             AgentPublisher agentPublisher,
+            AgentRegistrationUseCase agentRegistry,
             PresenceService presenceService) {
         this.messageService = messageService;
         this.agentPublisher = agentPublisher;
+        this.agentRegistry = agentRegistry;
         this.presenceService = presenceService;
         this.agentName = agentName;
         this.role = role;
@@ -39,6 +45,9 @@ public abstract class SubscriberAgent {
         logger().info("Registering {} subscriber", agentName);
         if (presenceService != null) {
             presenceService.markOnline(agentName, role);
+        }
+        if (agentRegistry != null) {
+            agentRegistry.register(new AgentDescriptor(agentName, agentName, AgentType.EMBEDDED, ""));
         }
         subscription = messageService.stream()
                 .doOnNext(e -> logger().info("Received message from {}", e.author()))
@@ -55,6 +64,9 @@ public abstract class SubscriberAgent {
         logger().info("{} subscriber disposed", agentName);
         if (presenceService != null) {
             presenceService.markOffline(agentName);
+        }
+        if (agentRegistry != null) {
+            agentRegistry.unregister(agentName);
         }
     }
 

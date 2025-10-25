@@ -82,9 +82,33 @@ class MessageApiTests {
         assertThat(received.getFirst()).contains("\"author\":\"socket\"");
     }
 
+    @Test
+    void agentEndpointPublishesMessage() {
+        webTestClient.post()
+                .uri("/api/agents")
+                .bodyValue(new AgentDescriptorRequest("remote-bot", "Remote Bot", "REMOTE", "http://example"))
+                .exchange()
+                .expectStatus().isOk();
+
+        webTestClient.post()
+                .uri("/api/agents/remote-bot/messages")
+                .bodyValue(new AgentMessageRequest("Remote hello", null, null))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.author").isEqualTo("remote-bot")
+                .jsonPath("$.payload").isEqualTo("Remote hello");
+    }
+
     private record MessageRequest(String author, String payload) {
     }
 
     private record MessageResponse(String id, String author, String payload, String timestamp) {
+    }
+
+    private record AgentDescriptorRequest(String name, String displayName, String type, String endpoint) {
+    }
+
+    private record AgentMessageRequest(String payload, String threadId, String parentMessageId) {
     }
 }

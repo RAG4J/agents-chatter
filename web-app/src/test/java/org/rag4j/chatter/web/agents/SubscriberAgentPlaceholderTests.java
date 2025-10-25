@@ -9,6 +9,9 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rag4j.chatter.application.messages.ConversationApplicationService;
+import org.rag4j.chatter.application.port.out.ModerationEventPort;
+import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.moderation.AgentMessageContext;
 import org.rag4j.chatter.domain.moderation.ModerationDecision;
 import org.rag4j.chatter.domain.moderation.ModerationEvent;
@@ -16,8 +19,6 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
-import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ class SubscriberAgentPlaceholderTests {
     private TestPlaceholderAgent subscriber;
     private TestModeratorService moderatorService;
     private TestEventPublisher eventPublisher;
+    private TestAgentRegistry agentRegistry;
 
     @BeforeEach
     void setUp() {
@@ -44,9 +46,15 @@ class SubscriberAgentPlaceholderTests {
         messageService = new MessageService(messageBus);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
-        conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
-        agentPublisher = new AgentPublisher(conversationCoordinator);
-        subscriber = new TestPlaceholderAgent(messageService, agentPublisher, presenceService);
+        agentRegistry = new TestAgentRegistry();
+        ConversationApplicationService service = new ConversationApplicationService(
+                messageService,
+                moderatorService,
+                eventPublisher,
+                2);
+        conversationCoordinator = new ConversationCoordinator(service);
+        agentPublisher = new AgentPublisher(service);
+        subscriber = new TestPlaceholderAgent(messageService, agentPublisher, agentRegistry, presenceService);
         subscriber.subscribe();
     }
 
@@ -71,8 +79,11 @@ class SubscriberAgentPlaceholderTests {
         private static final Logger logger = LoggerFactory.getLogger(TestPlaceholderAgent.class);
         private static final String AGENT_NAME = "Placeholder Agent";
 
-        TestPlaceholderAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-            super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
+        TestPlaceholderAgent(MessageService messageService,
+                AgentPublisher agentPublisher,
+                TestAgentRegistry agentRegistry,
+                PresenceService presenceService) {
+            super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, agentRegistry, presenceService);
         }
 
         @Override
@@ -86,7 +97,7 @@ class SubscriberAgentPlaceholderTests {
         }
     }
 
-    private static final class TestModeratorService implements ModeratorService {
+    private static final class TestModeratorService implements ModerationPolicyPort {
 
         private Function<AgentMessageContext, ModerationDecision> delegate = context -> ModerationDecision.approve();
 
@@ -100,7 +111,7 @@ class SubscriberAgentPlaceholderTests {
         }
     }
 
-    private static final class TestEventPublisher extends ModerationEventPublisher {
+    private static final class TestEventPublisher implements ModerationEventPort {
         private final java.util.List<ModerationEvent> events = new java.util.ArrayList<>();
 
         @Override
@@ -110,6 +121,19 @@ class SubscriberAgentPlaceholderTests {
 
         java.util.List<ModerationEvent> events() {
             return events;
+        }
+    }
+
+    private static final class TestAgentRegistry implements org.rag4j.chatter.application.port.in.AgentRegistrationUseCase {
+
+        @Override
+        public void register(org.rag4j.chatter.domain.agent.AgentDescriptor descriptor) {
+            // no-op
+        }
+
+        @Override
+        public void unregister(String agentName) {
+            // no-op
         }
     }
 }

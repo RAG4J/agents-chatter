@@ -11,6 +11,9 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rag4j.chatter.application.messages.ConversationApplicationService;
+import org.rag4j.chatter.application.port.out.ModerationEventPort;
+import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.domain.moderation.AgentMessageContext;
@@ -20,8 +23,6 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
-import org.rag4j.chatter.web.moderation.ModeratorService;
 import org.rag4j.chatter.web.presence.PresenceService;
 
 import reactor.test.StepVerifier;
@@ -34,6 +35,7 @@ class EchoAgentTests {
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private EchoAgent subscriber;
+    private TestAgentRegistry agentRegistry;
     private TestModeratorService moderatorService;
     private TestEventPublisher eventPublisher;
 
@@ -44,9 +46,15 @@ class EchoAgentTests {
         messageService = new MessageService(messageBus);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
-        conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
-        agentPublisher = new AgentPublisher(conversationCoordinator);
-        subscriber = new EchoAgent(messageService, agentPublisher, presenceService);
+        agentRegistry = new TestAgentRegistry();
+        ConversationApplicationService service = new ConversationApplicationService(
+                messageService,
+                moderatorService,
+                eventPublisher,
+                2);
+        conversationCoordinator = new ConversationCoordinator(service);
+        agentPublisher = new AgentPublisher(service);
+        subscriber = new EchoAgent(messageService, agentPublisher, agentRegistry, presenceService);
         subscriber.subscribe();
     }
 
@@ -116,7 +124,7 @@ class EchoAgentTests {
                 .verify();
     }
 
-    private static final class TestModeratorService implements ModeratorService {
+    private static final class TestModeratorService implements ModerationPolicyPort {
 
         private Function<AgentMessageContext, ModerationDecision> delegate = context -> ModerationDecision.approve();
 
@@ -130,7 +138,7 @@ class EchoAgentTests {
         }
     }
 
-    private static final class TestEventPublisher extends ModerationEventPublisher {
+    private static final class TestEventPublisher implements ModerationEventPort {
         private final java.util.List<ModerationEvent> events = new java.util.ArrayList<>();
 
         @Override
@@ -140,6 +148,25 @@ class EchoAgentTests {
 
         java.util.List<ModerationEvent> events() {
             return events;
+        }
+    }
+
+    private static final class TestAgentRegistry implements org.rag4j.chatter.application.port.in.AgentRegistrationUseCase {
+
+        private final java.util.Set<String> registeredAgents = new java.util.HashSet<>();
+
+        @Override
+        public void register(org.rag4j.chatter.domain.agent.AgentDescriptor descriptor) {
+            registeredAgents.add(descriptor.name());
+        }
+
+        @Override
+        public void unregister(String agentName) {
+            registeredAgents.remove(agentName);
+        }
+
+        boolean isRegistered(String agentName) {
+            return registeredAgents.contains(agentName);
         }
     }
 }

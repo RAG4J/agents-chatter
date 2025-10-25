@@ -3,9 +3,10 @@ package org.rag4j.chatter.web.agents;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.rag4j.chatter.application.messages.PublishCommand;
+import org.rag4j.chatter.application.messages.PublishResult;
+import org.rag4j.chatter.application.port.in.AgentMessagingCallback;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
-import org.rag4j.chatter.web.messages.ConversationCoordinator;
-import org.rag4j.chatter.web.messages.ConversationCoordinator.PublishResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,18 +14,18 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 /**
- * Facade for agent publications that routes responses through the
- * {@link ConversationCoordinator}, applying thread metadata and depth limits.
+ * Facade for agent publications that routes responses through the application-layer
+ * {@link AgentMessagingCallback}, applying thread metadata and depth limits.
  */
 @Component
 public class AgentPublisher {
 
     private static final Logger logger = LoggerFactory.getLogger(AgentPublisher.class);
 
-    private final ConversationCoordinator conversationCoordinator;
+    private final AgentMessagingCallback agentMessaging;
 
-    public AgentPublisher(ConversationCoordinator conversationCoordinator) {
-        this.conversationCoordinator = conversationCoordinator;
+    public AgentPublisher(AgentMessagingCallback agentMessaging) {
+        this.agentMessaging = agentMessaging;
     }
 
     public Mono<MessageEnvelope> publishSpontaneousAgentMessage(String agentName, String payload) {
@@ -32,8 +33,8 @@ public class AgentPublisher {
     }
 
     public Mono<MessageEnvelope> publishAgentResponse(String agentName, String payload, MessageEnvelope parent) {
-        return Mono.fromCallable(() -> conversationCoordinator.handlePublish(
-                        ConversationCoordinator.PublishRequest.forAgent(
+        return Mono.fromCallable(() -> agentMessaging.publish(
+                        PublishCommand.forAgent(
                                 agentName,
                                 payload,
                                 Optional.of(parent.threadId()),
@@ -58,11 +59,10 @@ public class AgentPublisher {
     }
 
     public Mono<MessageEnvelope> publishSpontaneousAgentMessage(String agentName, String payload, UUID threadId) {
-        return Mono.fromCallable(() -> conversationCoordinator.handlePublish(
-                        new ConversationCoordinator.PublishRequest(
+        return Mono.fromCallable(() -> agentMessaging.publish(
+                        PublishCommand.forAgent(
                                 agentName,
                                 payload,
-                                MessageEnvelope.MessageOrigin.AGENT,
                                 Optional.ofNullable(threadId),
                                 Optional.empty(),
                                 Optional.empty())))

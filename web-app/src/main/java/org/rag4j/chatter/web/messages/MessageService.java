@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import jakarta.annotation.PreDestroy;
 
+import org.rag4j.chatter.application.port.out.MessagePublicationPort;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import reactor.core.Disposable;
  * Tracks chat messages in-memory and bridges publishers to the shared message bus.
  */
 @Service
-public class MessageService {
+public class MessageService implements MessagePublicationPort {
 
     private final MessageBus messageBus;
     private final List<MessageEnvelope> history = new CopyOnWriteArrayList<>();
@@ -35,6 +36,7 @@ public class MessageService {
         return publish(envelope);
     }
 
+    @Override
     public MessageEnvelope publish(MessageEnvelope envelope) {
         boolean accepted = messageBus.publish(envelope);
         if (!accepted) {

@@ -1,5 +1,6 @@
 package org.rag4j.chatter.web.agents;
 
+import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
@@ -19,8 +20,13 @@ public class StarTrekAgent extends SubscriberAgent {
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
 
-    public StarTrekAgent(ChatClient chatClient, ChatMemory chatMemory, MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
+    public StarTrekAgent(ChatClient chatClient,
+                         ChatMemory chatMemory,
+                         MessageService messageService,
+                         AgentPublisher agentPublisher,
+                         AgentRegistrationUseCase agentRegistry,
+                         PresenceService presenceService) {
+        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, agentRegistry, presenceService);
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
     }

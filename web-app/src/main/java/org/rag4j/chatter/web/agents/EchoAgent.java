@@ -2,6 +2,7 @@ package org.rag4j.chatter.web.agents;
 
 import java.time.Duration;
 
+import org.rag4j.chatter.application.port.in.AgentRegistrationUseCase;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.MessageService;
@@ -20,8 +21,11 @@ public class EchoAgent extends SubscriberAgent {
 
     private Disposable subscription;
 
-    public EchoAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
+    public EchoAgent(MessageService messageService,
+            AgentPublisher agentPublisher,
+            AgentRegistrationUseCase agentRegistry,
+            PresenceService presenceService) {
+        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, agentRegistry, presenceService);
     }
 
 

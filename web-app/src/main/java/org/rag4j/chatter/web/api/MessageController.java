@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.rag4j.chatter.application.messages.PublishResult;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
@@ -69,12 +70,12 @@ public class MessageController {
                 parentId,
                 Optional.empty());
 
-        ConversationCoordinator.PublishResult result = conversationCoordinator.handlePublish(publishRequest);
-        if (result instanceof ConversationCoordinator.PublishResult.Accepted accepted) {
+        PublishResult result = conversationCoordinator.handlePublish(publishRequest);
+        if (result instanceof PublishResult.Accepted accepted) {
             return MessageDto.from(accepted.envelope());
         }
 
-        ConversationCoordinator.PublishResult.Rejected rejected = (ConversationCoordinator.PublishResult.Rejected) result;
+        PublishResult.Rejected rejected = (PublishResult.Rejected) result;
         throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, rejected.reason());
     }
 

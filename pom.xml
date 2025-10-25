@@ -22,6 +22,7 @@
 
     <modules>
         <module>core-domain</module>
+        <module>application-services</module>
         <module>event-bus</module>
         <module>web-app</module>
         <module>frontend</module>
@@ -52,6 +53,11 @@
             <dependency>
                 <groupId>org.rag4j.chatter</groupId>
                 <artifactId>core-domain</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.rag4j.chatter</groupId>
+                <artifactId>application-services</artifactId>
                 <version>0.1.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
