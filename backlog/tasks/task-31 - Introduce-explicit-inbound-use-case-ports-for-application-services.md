@@ -4,6 +4,7 @@ title: Introduce explicit inbound use-case ports for application services
 status: To Do
 assignee: []
 created_date: '2025-10-25 21:27'
+updated_date: '2025-10-25 22:24'
 labels:
   - architecture
   - hexagonal
@@ -27,3 +28,17 @@ Define inbound interfaces for key application services (e.g., conversation publi
 - [ ] #3 Application-service implementation classes remain package-private where possible, with tests updated accordingly.
 - [ ] #4 Document the new inbound ports to guide future adapter implementations.
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+Inventory controllers, adapters, and tests currently depending on concrete application service classes (e.g., ConversationApplicationService, AgentRegistryService).
+
+Design inbound port interfaces for key use cases (message publishing, agent registry/discovery, etc.) clearly separated in the application layer.
+
+Update application-services module to expose the new interfaces (possibly moving implementations to package-private) and ensure wiring provides the concrete beans.
+
+Refactor web adapters and agents to inject the new ports instead of concrete classes, adjusting configuration and tests.
+
+Document the new port usage and ensure DI configuration and tests remain green.
+<!-- SECTION:PLAN:END -->
