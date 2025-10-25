@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 19:31'
+updated_date: '2025-10-25 19:36'
 labels: []
 dependencies: []
 ---
@@ -50,3 +50,14 @@ Implementation Plan:
    - Run module builds/tests (`mvn -pl web-app -am test` where feasible) to ensure adapters work end-to-end.
    - Update README or module documentation summarizing adapter responsibilities and new wiring pattern.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+### Progress
+- Application service layer now consumed by Spring adapters: `MessageService`, `ModerationEventPublisher`, and `ModeratorService` implement outbound ports; `ConversationCoordinator`, controllers, WebSocket handler, and agents delegate via `PublishCommand`/`PublishResult`.
+- Added `AgentRegistryService` with in-memory registration adapter to prepare for agent modularization.
+- Introduced application-layer configuration wiring (`ApplicationServicesConfig`) to assemble domain + ports.
+- Updated unit tests to use application services, ensuring consistent behaviour, and ran `mvn -pl application-services compile`, `mvn -pl event-bus -am test -DskipITs`, and `mvn -pl web-app -am compile` (web-app tests skipped due to external AI calls).
+- Updated documentation (application-services README) to reflect responsibilities.
+<!-- SECTION:NOTES:END -->
