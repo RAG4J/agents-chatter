@@ -1,10 +1,11 @@
 ---
 id: task-29
 title: Introduce PresencePort and isolate presence tracking infrastructure
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 21:57'
+updated_date: '2025-10-25 22:02'
 labels:
   - architecture
   - hexagonal
