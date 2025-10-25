@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 22:02'
+updated_date: '2025-10-25 22:11'
 labels:
   - architecture
   - hexagonal
@@ -42,3 +42,9 @@ Update controllers, agents, and WebSocket/SSE adapters to depend on PresencePort
 
 Add or adjust tests to cover presence updates via the port abstraction and validate backward compatibility.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Introduced domain-level presence models (`PresenceParticipant`, `PresenceRole`, `PresenceStatus`) in core-domain and defined a new application-level `PresencePort`. Refactored `PresenceService` to implement the port with listener-based subscriptions and provided a Reactor bridge for SSE. Updated agents, WebSocket handler, and presence APIs to depend on the port abstraction. Adjusted unit tests to operate via the new port.
+<!-- SECTION:NOTES:END -->
