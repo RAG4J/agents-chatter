@@ -9,6 +9,8 @@ prepare the platform for modular or out-of-process agents.
   technology-agnostic ports.
   - `AgentRegistrationPort` + `AgentRegistryService`: track active agents and
     provide discovery APIs.
+  - `ConversationUseCase` with `PublishCommand`/`PublishResult`:
+    inbound contract for publishing conversation messages from any adapter.
   - `AgentMessagingCallback`: inbound port for agent-authored messages
     (implemented by `ConversationApplicationService`).
   - `AgentMessagingPort`: outbound hook for forwarding published messages to
@@ -88,6 +90,23 @@ Content-Type: application/json
 
 Remote agents can continue to use `/api/messages` with `originType=AGENT`, but
 the dedicated endpoint keeps agent-specific validation and telemetry isolated.
+
+## Conversation publishing adapters
+
+Adapters that need to publish messages (HTTP, WebSocket, scheduled jobs, etc.)
+should depend on the `ConversationUseCase` port:
+
+1. Inject `ConversationUseCase` from the application layer.
+2. Build a `PublishCommand` that captures the author, payload, origin, and
+   optional thread/parent identifiers.
+3. Invoke `conversationUseCase.publish(command)` and handle the returned
+   `PublishResult`:
+   - `PublishResult.Accepted` exposes the persisted `MessageEnvelope`.
+   - `PublishResult.Rejected` provides the rejection rationale plus depth/thread
+     metadata suitable for telemetry or client responses.
+
+This contract keeps adapters oblivious to `ConversationApplicationService`
+while surfacing the same moderation and depth checks used across the platform.
 
 ## Consuming messages
 

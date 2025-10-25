@@ -1,7 +1,4 @@
-package org.rag4j.chatter.application.port.in;
-
-import org.rag4j.chatter.application.messages.PublishCommand;
-import org.rag4j.chatter.application.messages.PublishResult;
+package org.rag4j.chatter.application.port.in.conversation;
 
 /**
  * Inbound port allowing agents to submit messages back into the system via application services.

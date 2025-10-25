@@ -4,12 +4,12 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.rag4j.chatter.application.messages.PublishResult;
 import org.rag4j.chatter.application.port.in.PresencePort;
+import org.rag4j.chatter.application.port.in.conversation.PublishResult;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
-import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.messages.MessageStreamFluxAdapter;
 import org.rag4j.chatter.domain.presence.PresenceRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +34,16 @@ public class MessageWebSocketHandler implements WebSocketHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageWebSocketHandler.class);
 
     private final ObjectMapper objectMapper;
-    private final MessageService messageService;
+    private final MessageStreamFluxAdapter messageStreamAdapter;
     private final ConversationCoordinator conversationCoordinator;
     private final PresencePort presencePort;
 
     public MessageWebSocketHandler(ObjectMapper objectMapper,
-            MessageService messageService,
+            MessageStreamFluxAdapter messageStreamAdapter,
             ConversationCoordinator conversationCoordinator,
             PresencePort presencePort) {
         this.objectMapper = objectMapper;
-        this.messageService = messageService;
+        this.messageStreamAdapter = messageStreamAdapter;
         this.conversationCoordinator = conversationCoordinator;
         this.presencePort = presencePort;
     }
@@ -53,7 +53,7 @@ public class MessageWebSocketHandler implements WebSocketHandler {
         String participantName = resolveParticipant(session.getHandshakeInfo().getUri());
         presencePort.markOnline(participantName, inferRole(participantName));
 
-        Flux<WebSocketMessage> outbound = messageService.stream()
+        Flux<WebSocketMessage> outbound = messageStreamAdapter.stream()
             .map(MessageDto::from)
             .map(this::encode)
             .map(session::textMessage);

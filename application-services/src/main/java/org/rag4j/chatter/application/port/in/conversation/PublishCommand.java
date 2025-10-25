@@ -1,4 +1,4 @@
-package org.rag4j.chatter.application.messages;
+package org.rag4j.chatter.application.port.in.conversation;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -9,9 +9,11 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.application.messages.ConversationApplicationService;
+import org.rag4j.chatter.application.messages.ConversationServices;
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
 import org.rag4j.chatter.application.port.in.PresencePort;
+import org.rag4j.chatter.application.port.in.conversation.AgentMessagingCallback;
+import org.rag4j.chatter.application.port.in.conversation.ConversationUseCase;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
 import org.rag4j.chatter.domain.moderation.AgentMessageContext;
@@ -21,6 +23,7 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.messages.MessageStreamFluxAdapter;
 import org.rag4j.chatter.domain.presence.PresenceRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,7 @@ class SubscriberAgentPlaceholderTests {
     private TestModeratorService moderatorService;
     private TestEventPublisher eventPublisher;
     private TestAgentRegistry agentRegistry;
+    private MessageStreamFluxAdapter messageStreamAdapter;
 
     @BeforeEach
     void setUp() {
@@ -47,16 +51,19 @@ class SubscriberAgentPlaceholderTests {
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         subscriptionPort = new MessageSubscriptionAdapter(messageService);
+        messageStreamAdapter = new MessageStreamFluxAdapter(messageService);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
         agentRegistry = new TestAgentRegistry();
-        ConversationApplicationService service = new ConversationApplicationService(
+        var conversationBundle = ConversationServices.create(
                 messageService,
                 moderatorService,
                 eventPublisher,
                 2);
-        conversationCoordinator = new ConversationCoordinator(service);
-        agentPublisher = new AgentPublisher(service);
+        ConversationUseCase conversationUseCase = conversationBundle.conversationUseCase();
+        AgentMessagingCallback agentMessagingCallback = conversationBundle.agentMessagingCallback();
+        conversationCoordinator = new ConversationCoordinator(conversationUseCase);
+        agentPublisher = new AgentPublisher(agentMessagingCallback);
         subscriber = new TestPlaceholderAgent(subscriptionPort, agentPublisher, agentRegistry, presencePort);
         subscriber.subscribe();
     }
@@ -69,7 +76,7 @@ class SubscriberAgentPlaceholderTests {
     @Test
     void suppressesPlaceholderResponses() {
         StepVerifier.create(
-                        messageService.stream()
+                        messageStreamAdapter.stream()
                                 .filter(envelope -> TestPlaceholderAgent.AGENT_NAME.equals(envelope.author()))
                                 .take(1))
                 .then(() -> conversationCoordinator.handlePublish(

@@ -1,62 +1,57 @@
 package org.rag4j.chatter.web.agents;
 
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
+import org.rag4j.chatter.application.port.in.MessageStreamPort;
 import org.rag4j.chatter.domain.agent.AgentDescriptor;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
-import org.rag4j.chatter.web.messages.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
-
 /**
- * Bridges the application-layer agent subscription port to the existing Reactor-based
- * {@link MessageService} stream.
+ * Bridges the application-layer agent subscription port to the message stream port.
  */
 @Component
 public class MessageSubscriptionAdapter implements AgentMessageSubscriptionPort {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageSubscriptionAdapter.class);
 
-    private final MessageService messageService;
+    private final MessageStreamPort messageStreamPort;
 
-    public MessageSubscriptionAdapter(MessageService messageService) {
-        this.messageService = messageService;
+    public MessageSubscriptionAdapter(MessageStreamPort messageStreamPort) {
+        this.messageStreamPort = messageStreamPort;
     }
 
     @Override
     public AgentSubscription subscribe(AgentDescriptor agent, AgentMessageSubscriber subscriber) {
-        Flux<MessageEnvelope> stream = messageService.stream()
-                .doOnError(error -> logger.warn("Agent {} stream encountered error: {}", agent.name(), error.getMessage(), error));
+        MessageStreamPort.MessageStreamSubscription subscription = messageStreamPort.subscribe(message -> {
+            try {
+                subscriber.onMessage(message);
+            }
+            catch (Exception ex) {
+                logger.warn("Agent {} subscriber threw exception: {}", agent.name(), ex.getMessage(), ex);
+            }
+        });
 
-        Disposable disposable = stream.subscribe(
-                subscriber::onMessage,
-                error -> logger.debug("Agent {} subscriber terminated due to error", agent.name(), error),
-                () -> logger.debug("Agent {} subscriber completed", agent.name()));
-
-        return new DisposableAgentSubscription(disposable);
+        return new MessageStreamAgentSubscription(subscription);
     }
 
-    private static final class DisposableAgentSubscription implements AgentSubscription {
+    private static final class MessageStreamAgentSubscription implements AgentSubscription {
 
-        private final Disposable delegate;
+        private final MessageStreamPort.MessageStreamSubscription delegate;
 
-        private DisposableAgentSubscription(Disposable delegate) {
+        private MessageStreamAgentSubscription(MessageStreamPort.MessageStreamSubscription delegate) {
             this.delegate = delegate;
         }
 
         @Override
         public void close() {
-            if (!delegate.isDisposed()) {
-                delegate.dispose();
-            }
+            delegate.close();
         }
 
         @Override
         public boolean isActive() {
-            return !delegate.isDisposed();
+            return delegate.isActive();
         }
     }
 }

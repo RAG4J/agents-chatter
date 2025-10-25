@@ -11,8 +11,10 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.application.messages.ConversationApplicationService;
+import org.rag4j.chatter.application.messages.ConversationServices;
 import org.rag4j.chatter.application.port.in.AgentMessageSubscriptionPort;
+import org.rag4j.chatter.application.port.in.conversation.AgentMessagingCallback;
+import org.rag4j.chatter.application.port.in.conversation.ConversationUseCase;
 import org.rag4j.chatter.application.port.in.PresencePort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
@@ -25,6 +27,7 @@ import org.rag4j.chatter.eventbus.bus.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.messages.MessageStreamFluxAdapter;
 import org.rag4j.chatter.domain.presence.PresenceRole;
 
 import reactor.test.StepVerifier;
@@ -38,6 +41,7 @@ class EchoAgentTests {
     private AgentPublisher agentPublisher;
     private EchoAgent subscriber;
     private AgentMessageSubscriptionPort subscriptionPort;
+    private MessageStreamFluxAdapter messageStreamAdapter;
     private TestAgentRegistry agentRegistry;
     private TestModeratorService moderatorService;
     private TestEventPublisher eventPublisher;
@@ -48,16 +52,19 @@ class EchoAgentTests {
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         subscriptionPort = new MessageSubscriptionAdapter(messageService);
+        messageStreamAdapter = new MessageStreamFluxAdapter(messageService);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
         agentRegistry = new TestAgentRegistry();
-        ConversationApplicationService service = new ConversationApplicationService(
+        var conversationBundle = ConversationServices.create(
                 messageService,
                 moderatorService,
                 eventPublisher,
                 2);
-        conversationCoordinator = new ConversationCoordinator(service);
-        agentPublisher = new AgentPublisher(service);
+        ConversationUseCase conversationUseCase = conversationBundle.conversationUseCase();
+        AgentMessagingCallback agentMessagingCallback = conversationBundle.agentMessagingCallback();
+        conversationCoordinator = new ConversationCoordinator(conversationUseCase);
+        agentPublisher = new AgentPublisher(agentMessagingCallback);
         subscriber = new EchoAgent(subscriptionPort, agentPublisher, agentRegistry, presencePort);
         subscriber.subscribe();
     }
@@ -70,7 +77,7 @@ class EchoAgentTests {
     @Test
     void echoesMessagesFromOtherAuthors() {
         StepVerifier.create(
-                        messageService.stream()
+                        messageStreamAdapter.stream()
                                 .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
                                 .map(MessageEnvelope::payload)
                                 .take(1))
@@ -86,7 +93,7 @@ class EchoAgentTests {
         moderatorService.setDelegate(context -> ModerationDecision.reject("blocked"));
 
         StepVerifier.create(
-                        messageService.stream()
+                        messageStreamAdapter.stream()
                                 .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
                                 .take(1))
                 .then(() -> conversationCoordinator.handlePublish(
@@ -108,7 +115,7 @@ class EchoAgentTests {
                 2);
 
         StepVerifier.create(
-                        messageService.stream()
+                        messageStreamAdapter.stream()
                                 .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
                                 .take(1))
                 .then(() -> messageService.publish(incoming))
@@ -119,7 +126,7 @@ class EchoAgentTests {
     @Test
     void doesNotEchoOwnMessages() {
         StepVerifier.create(
-                        messageService.stream()
+                        messageStreamAdapter.stream()
                                 .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
                                 .skip(1)
                                 .take(1))

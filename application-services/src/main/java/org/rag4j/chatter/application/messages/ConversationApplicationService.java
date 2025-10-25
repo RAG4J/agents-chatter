@@ -6,7 +6,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.rag4j.chatter.application.port.in.AgentMessagingCallback;
+import org.rag4j.chatter.application.port.in.conversation.AgentMessagingCallback;
+import org.rag4j.chatter.application.port.in.conversation.ConversationUseCase;
+import org.rag4j.chatter.application.port.in.conversation.PublishCommand;
+import org.rag4j.chatter.application.port.in.conversation.PublishResult;
 import org.rag4j.chatter.application.port.out.MessagePublicationPort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
@@ -20,7 +23,7 @@ import org.rag4j.chatter.domain.moderation.ModerationEvent;
  * Application service responsible for orchestrating message publication. It enforces depth limits,
  * invokes moderation rules, and dispatches moderation telemetry while remaining framework-free.
  */
-public class ConversationApplicationService implements AgentMessagingCallback {
+class ConversationApplicationService implements ConversationUseCase, AgentMessagingCallback {
 
     private final MessagePublicationPort messagePublicationPort;
     private final ModerationPolicyPort moderationPolicyPort;
@@ -42,9 +45,6 @@ public class ConversationApplicationService implements AgentMessagingCallback {
         this.maxAgentDepth = maxAgentDepth;
     }
 
-    /**
-     * Execute the publish use case for the supplied command.
-     */
     @Override
     public PublishResult publish(PublishCommand command) {
         UUID threadId = command.threadId()

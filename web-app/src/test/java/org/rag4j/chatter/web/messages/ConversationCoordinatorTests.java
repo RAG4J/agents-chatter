@@ -6,8 +6,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.application.messages.ConversationApplicationService;
-import org.rag4j.chatter.application.messages.PublishResult;
+import org.rag4j.chatter.application.messages.ConversationServices;
+import org.rag4j.chatter.application.port.in.conversation.ConversationUseCase;
+import org.rag4j.chatter.application.port.in.conversation.PublishResult;
 import org.rag4j.chatter.application.port.out.MessagePublicationPort;
 import org.rag4j.chatter.application.port.out.ModerationEventPort;
 import org.rag4j.chatter.application.port.out.ModerationPolicyPort;
@@ -30,12 +31,12 @@ class ConversationCoordinatorTests {
         messageService = new MessageService(new ReactorMessageBus());
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
-        ConversationApplicationService service = new ConversationApplicationService(
+        ConversationUseCase conversationUseCase = ConversationServices.create(
                 messageService,
                 moderatorService,
                 eventPublisher,
-                2);
-        coordinator = new ConversationCoordinator(service);
+                2).conversationUseCase();
+        coordinator = new ConversationCoordinator(conversationUseCase);
     }
 
     @Test

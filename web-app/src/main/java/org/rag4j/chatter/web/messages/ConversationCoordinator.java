@@ -3,11 +3,12 @@ package org.rag4j.chatter.web.messages;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.application.messages.ConversationApplicationService;
-import org.rag4j.chatter.application.messages.PublishCommand;
-import org.rag4j.chatter.application.messages.PublishResult;
+import org.rag4j.chatter.application.port.in.conversation.ConversationUseCase;
+import org.rag4j.chatter.application.port.in.conversation.PublishCommand;
+import org.rag4j.chatter.application.port.in.conversation.PublishResult;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,10 +17,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConversationCoordinator {
 
-    private final ConversationApplicationService conversationService;
+    private final ConversationUseCase conversationUseCase;
 
-    public ConversationCoordinator(ConversationApplicationService conversationService) {
-        this.conversationService = conversationService;
+    public ConversationCoordinator(@Qualifier("conversationUseCase") ConversationUseCase conversationUseCase) {
+        this.conversationUseCase = conversationUseCase;
     }
 
     public PublishResult handlePublish(PublishRequest request) {
@@ -30,7 +31,7 @@ public class ConversationCoordinator {
                 request.threadId(),
                 request.parentMessageId(),
                 request.parentEnvelope());
-        return conversationService.publish(command);
+        return conversationUseCase.publish(command);
     }
 
     public record PublishRequest(

@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.application.messages.PublishCommand;
-import org.rag4j.chatter.application.messages.PublishResult;
-import org.rag4j.chatter.application.port.in.AgentMessagingCallback;
+import org.rag4j.chatter.application.port.in.conversation.AgentMessagingCallback;
+import org.rag4j.chatter.application.port.in.conversation.PublishCommand;
+import org.rag4j.chatter.application.port.in.conversation.PublishResult;
 import org.rag4j.chatter.domain.message.MessageEnvelope;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;

@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.application.messages.PublishResult;
+import org.rag4j.chatter.application.port.in.MessageStreamPort;
+import org.rag4j.chatter.application.port.in.conversation.PublishResult;
 import org.rag4j.chatter.domain.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
-import org.rag4j.chatter.web.messages.MessageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -29,17 +29,17 @@ import reactor.core.publisher.Mono;
 @Validated
 public class MessageController {
 
-    private final MessageService messageService;
+    private final MessageStreamPort messageStreamPort;
     private final ConversationCoordinator conversationCoordinator;
 
-    public MessageController(MessageService messageService, ConversationCoordinator conversationCoordinator) {
-        this.messageService = messageService;
+    public MessageController(MessageStreamPort messageStreamPort, ConversationCoordinator conversationCoordinator) {
+        this.messageStreamPort = messageStreamPort;
         this.conversationCoordinator = conversationCoordinator;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<List<MessageDto>> getMessages() {
-        return Mono.fromSupplier(() -> messageService.getHistory().stream()
+        return Mono.fromSupplier(() -> messageStreamPort.history().stream()
             .map(MessageDto::from)
             .toList());
     }
