@@ -1,7 +1,7 @@
 ---
 id: task-29
 title: Introduce PresencePort and isolate presence tracking infrastructure
-status: In Progress
+status: Done
 assignee:
   - '@codex'
 created_date: '2025-10-25 21:27'
@@ -23,10 +23,10 @@ Add an application-layer PresencePort (and related use cases if needed) that enc
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Presence-related collaborators depend on a PresencePort contract located in the application-services module.
-- [ ] #2 Current PresenceService becomes an adapter implementing the port, with Reactor-specific code confined to the adapter layer.
-- [ ] #3 Controllers/agents update to inject the port interface rather than the concrete service.
-- [ ] #4 Add tests covering presence updates via the new port abstraction.
+- [x] #1 Presence-related collaborators depend on a PresencePort contract located in the application-services module.
+- [x] #2 Current PresenceService becomes an adapter implementing the port, with Reactor-specific code confined to the adapter layer.
+- [x] #3 Controllers/agents update to inject the port interface rather than the concrete service.
+- [x] #4 Add tests covering presence updates via the new port abstraction.
 <!-- AC:END -->
 
 ## Implementation Plan
