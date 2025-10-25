@@ -1,11 +1,11 @@
 ---
 id: task-30
 title: Hide Reactor types behind messaging ports and clarify streaming contract
-status: In Progress
+status: Done
 assignee:
   - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 22:22'
+updated_date: '2025-10-25 22:23'
 labels:
   - architecture
   - messaging
