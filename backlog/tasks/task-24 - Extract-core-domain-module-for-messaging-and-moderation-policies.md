@@ -5,7 +5,7 @@ status: Done
 assignee:
   - codex
 created_date: '2025-10-25 10:34'
-updated_date: '2025-10-25 18:06'
+updated_date: '2025-10-25 18:07'
 labels: []
 dependencies: []
 ---
@@ -25,9 +25,9 @@ Out of scope: introducing persistence or changing existing application/module wi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 `core-domain` module builds independently without Spring or Reactor dependencies.
-- [ ] #2 Existing web/app modules compile against the extracted domain types without behavioural regressions.
-- [ ] #3 Basic unit tests cover depth calculation and moderation rule primitives within the new module.
+- [ ] #1 [x] #1 `core-domain` module builds independently without Spring or Reactor dependencies.
+- [ ] #2 [x] #2 Existing web/app modules compile against the extracted domain types without behavioural regressions.
+- [ ] #3 [x] #3 Basic unit tests cover depth calculation and moderation rule primitives within the new module.
 <!-- AC:END -->
 
 ## Implementation Plan
