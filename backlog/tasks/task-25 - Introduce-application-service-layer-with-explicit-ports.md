@@ -1,11 +1,11 @@
 ---
 id: task-25
 title: Introduce application service layer with explicit ports
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 19:15'
+updated_date: '2025-10-25 19:21'
 labels: []
 dependencies: []
 ---
@@ -25,9 +25,9 @@ Out of scope: implementing new adapters or persistence; this task focuses on the
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Application services and port interfaces compile in isolation from Spring/WebFlux infrastructure.
-- [ ] #2 Existing controllers/agents can be refactored to depend on the new ports (even if integration happens in a follow-up task).
-- [ ] #3 Documentation or inline README describes the responsibilities of the new application layer and its ports.
+- [x] #1 Application services and port interfaces compile in isolation from Spring/WebFlux infrastructure.
+- [x] #2 Existing controllers/agents can be refactored to depend on the new ports (even if integration happens in a follow-up task).
+- [x] #3 Documentation or inline README describes the responsibilities of the new application layer and its ports.
 <!-- AC:END -->
 
 ## Implementation Plan
