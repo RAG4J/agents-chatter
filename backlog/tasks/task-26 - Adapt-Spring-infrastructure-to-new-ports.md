@@ -1,11 +1,11 @@
 ---
 id: task-26
 title: Adapt Spring infrastructure to new ports
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 19:36'
+updated_date: '2025-10-25 19:37'
 labels: []
 dependencies: []
 ---
@@ -25,9 +25,9 @@ Out of scope: persistence backends or agent runtime changes; focus on wiring exi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 All Spring beans use the new port interfaces, with adapters encapsulating Reactor, SSE, and external AI integration.
-- [ ] #2 Integration tests or smoke tests confirm message publishing, moderation, and SSE streams still function end-to-end.
-- [ ] #3 Documentation updated to show how adapters map to the new ports.
+- [x] #1 All Spring beans use the new port interfaces, with adapters encapsulating Reactor, SSE, and external AI integration.
+- [x] #2 Integration tests or smoke tests confirm message publishing, moderation, and SSE streams still function end-to-end.
+- [x] #3 Documentation updated to show how adapters map to the new ports.
 <!-- AC:END -->
 
 ## Implementation Plan
