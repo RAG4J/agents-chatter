@@ -21,10 +21,11 @@ public class ApeldoornITScheduleAgent extends SubscriberAgent {
     private final ChatMemory chatMemory;
 
     public ApeldoornITScheduleAgent(MessageService messageService,
+                                    AgentPublisher agentPublisher,
                                     PresenceService presenceService,
                                     ChatClient chatClient,
                                     ChatMemory chatMemory) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, presenceService);
+        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
     }
@@ -236,4 +237,3 @@ public class ApeldoornITScheduleAgent extends SubscriberAgent {
                 .content()).subscribeOn(Schedulers.boundedElastic());
     }
 }
-

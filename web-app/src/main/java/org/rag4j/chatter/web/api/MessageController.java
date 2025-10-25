@@ -1,9 +1,14 @@
 package org.rag4j.chatter.web.api;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import reactor.core.publisher.Mono;
 
@@ -23,9 +29,11 @@ import reactor.core.publisher.Mono;
 public class MessageController {
 
     private final MessageService messageService;
+    private final ConversationCoordinator conversationCoordinator;
 
-    public MessageController(MessageService messageService) {
+    public MessageController(MessageService messageService, ConversationCoordinator conversationCoordinator) {
         this.messageService = messageService;
+        this.conversationCoordinator = conversationCoordinator;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,11 +49,58 @@ public class MessageController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<MessageDto> publishMessage(@RequestBody MessageRequest request) {
-        return Mono.fromSupplier(() -> {
-            return MessageDto.from(messageService.publish(request.author(), request.payload()));
-        });
+        return Mono.fromSupplier(() -> publishThroughCoordinator(request));
+    }
+
+    private MessageDto publishThroughCoordinator(MessageRequest request) {
+        MessageOrigin origin = request.originType()
+                .map(String::toUpperCase)
+                .map(MessageOrigin::valueOf)
+                .orElse(MessageOrigin.HUMAN);
+
+        Optional<UUID> threadId = request.threadId().flatMap(this::safeParseUuid);
+        Optional<UUID> parentId = request.parentMessageId().flatMap(this::safeParseUuid);
+
+        ConversationCoordinator.PublishRequest publishRequest = new ConversationCoordinator.PublishRequest(
+                request.author(),
+                request.payload(),
+                origin,
+                threadId,
+                parentId,
+                Optional.empty());
+
+        ConversationCoordinator.PublishResult result = conversationCoordinator.handlePublish(publishRequest);
+        if (result instanceof ConversationCoordinator.PublishResult.Accepted accepted) {
+            return MessageDto.from(accepted.envelope());
+        }
+
+        ConversationCoordinator.PublishResult.Rejected rejected = (ConversationCoordinator.PublishResult.Rejected) result;
+        throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, rejected.reason());
+    }
+
+    private Optional<UUID> safeParseUuid(String value) {
+        if (value == null || value.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(UUID.fromString(value));
+        }
+        catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid UUID value: " + value);
+        }
     }
 
     // DTOs
-    public record MessageRequest(String author, String payload) {}
+    public record MessageRequest(String author,
+                                 String payload,
+                                 Optional<String> originType,
+                                 Optional<String> threadId,
+                                 Optional<String> parentMessageId) {
+
+        public MessageRequest {
+            originType = originType == null ? Optional.empty() : originType;
+            threadId = threadId == null ? Optional.empty() : threadId;
+            parentMessageId = parentMessageId == null ? Optional.empty() : parentMessageId;
+        }
+    }
 }

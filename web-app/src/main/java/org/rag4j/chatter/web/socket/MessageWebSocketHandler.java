@@ -2,11 +2,16 @@ package org.rag4j.chatter.web.socket;
 
 import java.net.URI;
 import java.util.Locale;
+import java.util.Optional;
 
+import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.rag4j.chatter.web.presence.PresenceRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -25,13 +30,20 @@ import reactor.core.publisher.Mono;
 @Component
 public class MessageWebSocketHandler implements WebSocketHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(MessageWebSocketHandler.class);
+
     private final ObjectMapper objectMapper;
     private final MessageService messageService;
+    private final ConversationCoordinator conversationCoordinator;
     private final PresenceService presenceService;
 
-    public MessageWebSocketHandler(ObjectMapper objectMapper, MessageService messageService, PresenceService presenceService) {
+    public MessageWebSocketHandler(ObjectMapper objectMapper,
+            MessageService messageService,
+            ConversationCoordinator conversationCoordinator,
+            PresenceService presenceService) {
         this.objectMapper = objectMapper;
         this.messageService = messageService;
+        this.conversationCoordinator = conversationCoordinator;
         this.presenceService = presenceService;
     }
 
@@ -48,8 +60,24 @@ public class MessageWebSocketHandler implements WebSocketHandler {
         Mono<Void> receive = session.receive()
             .map(WebSocketMessage::getPayloadAsText)
             .flatMap(this::decodeRequest)
-            .flatMap(request -> Mono.fromSupplier(() -> MessageDto.from(
-                    messageService.publish(request.author(), request.payload()))))
+            .flatMap(request -> Mono.fromSupplier(() -> conversationCoordinator.handlePublish(
+                            new ConversationCoordinator.PublishRequest(
+                                    request.author(),
+                                    request.payload(),
+                                    MessageOrigin.HUMAN,
+                                    Optional.empty(),
+                                    Optional.empty(),
+                                    Optional.empty()))))
+            .doOnNext(result -> {
+                if (result instanceof ConversationCoordinator.PublishResult.Rejected rejected) {
+                    // Rely on separate telemetry channel for user feedback; for now just log.
+                    logger.info(
+                            "Dropping websocket message for thread {} at depth {}: {}",
+                            rejected.threadId(),
+                            rejected.attemptedDepth(),
+                            rejected.reason());
+                }
+            })
             .then();
 
         Mono<Void> send = session.send(outbound);

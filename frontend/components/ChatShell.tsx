@@ -19,6 +19,7 @@ import { MessageComposer } from "@/components/MessageComposer";
 import { MessageHeader } from "@/components/MessageHeader";
 import { MessageList } from "@/components/MessageList";
 import { useMessagesFeed } from "@/hooks/useMessagesFeed";
+import { useModerationEvents } from "@/hooks/useModerationEvents";
 import { usePresence } from "@/hooks/usePresence";
 
 export default function ChatShell() {
@@ -34,6 +35,11 @@ export default function ChatShell() {
   } = useMessagesFeed();
 
   const { participants } = usePresence();
+  const {
+    events: moderationEvents,
+    error: moderationError,
+    clearError: clearModerationError
+  } = useModerationEvents(10);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -107,6 +113,58 @@ export default function ChatShell() {
                 surface summaries, suggested prompts, or system status once the
                 backend services are connected.
               </Text>
+              {moderationError && (
+                <Alert status="warning" variant="subtle" borderRadius="md">
+                  <AlertIcon />
+                  {moderationError}
+                  <Text
+                    as="button"
+                    ml={2}
+                    fontWeight="semibold"
+                    textDecoration="underline"
+                    onClick={clearModerationError}
+                  >
+                    Dismiss
+                  </Text>
+                </Alert>
+              )}
+              <Stack spacing={3}>
+                <Text fontSize="sm" fontWeight="semibold" color="gray.200">
+                  Recent moderation
+                </Text>
+                {moderationEvents.length === 0 ? (
+                  <Text fontSize="sm" color="gray.500">
+                    No moderation actions yet.
+                  </Text>
+                ) : (
+                  moderationEvents.map((event) => (
+                    <Box
+                      key={`${event.threadId}-${event.occurredAt.getTime()}`}
+                      bg="blackAlpha.500"
+                      borderRadius="lg"
+                      p={3}
+                      border="1px solid"
+                      borderColor="whiteAlpha.200"
+                    >
+                      <Text fontSize="sm" fontWeight="medium" color="orange.200">
+                        {event.agent}
+                      </Text>
+                      <Text fontSize="xs" color="gray.400">
+                        {event.occurredAt.toLocaleTimeString()} • Thread{" "}
+                        {event.threadId.slice(0, 8)}
+                      </Text>
+                      <Text fontSize="sm" color="gray.100" mt={2}>
+                        {event.rationale}
+                      </Text>
+                      {event.messagePreview && (
+                        <Text fontSize="xs" color="gray.400" mt={2} fontStyle="italic">
+                          “{event.messagePreview}”
+                        </Text>
+                      )}
+                    </Box>
+                  ))
+                )}
+              </Stack>
               {source === "mock" && (
                 <Text fontSize="sm" color="orange.300">
                   You&apos;re currently viewing mock data. Start the backend to

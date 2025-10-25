@@ -15,13 +15,19 @@ public abstract class SubscriberAgent {
     public static final String NO_MESSAGE_PLACEHOLDER = "#nothingtosay#";
 
     private final MessageService messageService;
+    private final AgentPublisher agentPublisher;
     private final PresenceService presenceService;
     private final String agentName;
     private final PresenceRole role;
     private Disposable subscription;
 
-    public SubscriberAgent(String agentName, PresenceRole role, MessageService messageService, PresenceService presenceService) {
+    public SubscriberAgent(String agentName,
+            PresenceRole role,
+            MessageService messageService,
+            AgentPublisher agentPublisher,
+            PresenceService presenceService) {
         this.messageService = messageService;
+        this.agentPublisher = agentPublisher;
         this.presenceService = presenceService;
         this.agentName = agentName;
         this.role = role;
@@ -52,7 +58,7 @@ public abstract class SubscriberAgent {
     }
 
     protected void publishResponse(MessageEnvelope incoming) {
-        messagePayload(incoming.payload())
+        messagePayload(incoming)
                 .map(responsePayload -> responsePayload == null ? "" : responsePayload.trim())
                 .flatMap(responsePayload -> {
                     if (responsePayload.isBlank()) {
@@ -64,7 +70,13 @@ public abstract class SubscriberAgent {
                         return Mono.empty();
                     }
                     logger().info("Handling message from {} as '{}'", incoming.author(), responsePayload);
-                    return Mono.fromRunnable(() -> messageService.publish(agentName, responsePayload));
+                    return agentPublisher.publishAgentResponse(agentName, responsePayload, incoming)
+                            .doOnNext(envelope -> logger().info("Published agent response {} for thread {}",
+                                    envelope.id(), envelope.threadId()))
+                            .switchIfEmpty(Mono.fromRunnable(() -> logger().info(
+                                    "Moderator rejected {} response on thread {}", agentName, incoming.threadId()))
+                                    .then(Mono.empty()))
+                            .then();
                 })
                 .subscribe();
     }
@@ -75,6 +87,10 @@ public abstract class SubscriberAgent {
     }
 
     abstract Logger logger();
+
+    protected Mono<String> messagePayload(MessageEnvelope incoming) {
+        return messagePayload(incoming.payload());
+    }
 
     abstract Mono<String> messagePayload(String incomingPayload);
 

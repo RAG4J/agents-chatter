@@ -19,8 +19,8 @@ public class StarWarsAgent extends SubscriberAgent {
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
 
-    public StarWarsAgent(ChatClient chatClient, ChatMemory chatMemory, MessageService messageService, PresenceService presenceService) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, presenceService);
+    public StarWarsAgent(ChatClient chatClient, ChatMemory chatMemory, MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
+        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
     }

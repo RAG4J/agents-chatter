@@ -18,8 +18,8 @@ public class AgentsConfig {
 
     @Bean
     @Profile("echo-agent")
-    public EchoAgent echoAgent(MessageService messageService, PresenceService presenceService) {
-        return new EchoAgent(messageService, presenceService);
+    public EchoAgent echoAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
+        return new EchoAgent(messageService, agentPublisher, presenceService);
     }
 
     @Bean
@@ -27,9 +27,10 @@ public class AgentsConfig {
     public FootballAgent footballAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
                                        MessageService messageService,
+                                       AgentPublisher agentPublisher,
                                        PresenceService presenceService) {
 
-        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, presenceService);
+        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
     }
 
     @Bean
@@ -37,8 +38,9 @@ public class AgentsConfig {
     public ApeldoornITScheduleAgent apeldoornITScheduleAgent(ChatModel chatModel,
                                                              ChatMemory chatMemory,
                                                              MessageService messageService,
+                                                             AgentPublisher agentPublisher,
                                                              PresenceService presenceService) {
-        return new ApeldoornITScheduleAgent(messageService, presenceService,
+        return new ApeldoornITScheduleAgent(messageService, agentPublisher, presenceService,
                 ChatClient.builder(chatModel).build(), chatMemory);
     }
 
@@ -47,8 +49,9 @@ public class AgentsConfig {
     public StarWarsAgent starWarsAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
                                        MessageService messageService,
+                                       AgentPublisher agentPublisher,
                                        PresenceService presenceService) {
-        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, presenceService);
+        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
     }
 
     @Bean
@@ -56,8 +59,9 @@ public class AgentsConfig {
     public StarTrekAgent starTrekAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
                                        MessageService messageService,
+                                       AgentPublisher agentPublisher,
                                        PresenceService presenceService) {
-        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, presenceService);
+        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
     }
 
 

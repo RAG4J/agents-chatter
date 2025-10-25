@@ -32,6 +32,10 @@ public class MessageService {
 
     public MessageEnvelope publish(String author, String payload) {
         MessageEnvelope envelope = MessageEnvelope.from(author, payload);
+        return publish(envelope);
+    }
+
+    public MessageEnvelope publish(MessageEnvelope envelope) {
         boolean accepted = messageBus.publish(envelope);
         if (!accepted) {
             history.add(envelope);
