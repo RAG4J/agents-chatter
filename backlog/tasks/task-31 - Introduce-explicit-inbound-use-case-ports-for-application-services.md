@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 22:31'
+updated_date: '2025-10-25 23:14'
 labels:
   - architecture
   - hexagonal
@@ -24,10 +24,10 @@ Define inbound interfaces for key application services (e.g., conversation publi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Conversation publishing endpoints depend on a new inbound port interface instead of ConversationApplicationService directly.
+- [x] #1 Conversation publishing endpoints depend on a new inbound port interface instead of ConversationApplicationService directly.
 - [ ] #2 Agent registry endpoints/agents depend on a dedicated use-case interface located in the application layer.
 - [ ] #3 Application-service implementation classes remain package-private where possible, with tests updated accordingly.
-- [ ] #4 Document the new inbound ports to guide future adapter implementations.
+- [x] #4 Document the new inbound ports to guide future adapter implementations.
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -43,3 +43,9 @@ Refactor web adapters and agents to inject the new ports instead of concrete cla
 
 Document the new port usage and ensure DI configuration and tests remain green.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Moved the conversation publishing command/result types into a dedicated inbound port package and updated all adapters to depend on the new contracts. Documented the usage pattern for adapters in docs/agent-runtime.md. Build passes with -DskipTests while full test run is blocked by sandbox instrumentation limits.
+<!-- SECTION:NOTES:END -->
