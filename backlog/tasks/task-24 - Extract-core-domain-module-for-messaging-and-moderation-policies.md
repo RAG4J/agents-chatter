@@ -25,9 +25,9 @@ Out of scope: introducing persistence or changing existing application/module wi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 #1 `core-domain` module builds independently without Spring or Reactor dependencies.
-- [x] #2 #2 Existing web/app modules compile against the extracted domain types without behavioural regressions.
-- [x] #3 #3 Basic unit tests cover depth calculation and moderation rule primitives within the new module.
+- [x] #1 core-domain module builds independently without Spring or Reactor dependencies.
+- [x] #2 Existing web/app modules compile against the extracted domain types without behavioural regressions.
+- [x] #3 Basic unit tests cover depth calculation and moderation rule primitives within the new module.
 <!-- AC:END -->
 
 ## Implementation Plan
