@@ -1,11 +1,11 @@
 ---
 id: task-15
 title: Design for limiting repetitive agent chatter
-status: In Progress
+status: Done
 assignee:
   - codex
 created_date: '2025-10-24 09:34'
-updated_date: '2025-10-24 09:46'
+updated_date: '2025-10-25 07:55'
 labels: []
 dependencies: []
 ---
