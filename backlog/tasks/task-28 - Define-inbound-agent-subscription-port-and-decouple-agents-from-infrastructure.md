@@ -1,10 +1,11 @@
 ---
 id: task-28
 title: Define inbound agent subscription port and decouple agents from infrastructure
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 21:37'
+updated_date: '2025-10-25 21:42'
 labels:
   - architecture
   - agents
