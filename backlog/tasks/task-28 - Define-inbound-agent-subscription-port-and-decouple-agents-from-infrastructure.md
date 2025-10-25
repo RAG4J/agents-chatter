@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@codex'
 created_date: '2025-10-25 21:27'
-updated_date: '2025-10-25 21:56'
+updated_date: '2025-10-25 21:57'
 labels:
   - architecture
   - agents
@@ -24,10 +24,10 @@ Create an application-layer inbound port that captures agent subscription and me
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Agents no longer inject MessageService directly; they depend on a new inbound port contract.
-- [ ] #2 Agent reactive behaviour (subscribe/publish lifecycle) is implemented without direct Reactor dependencies in domain-level code.
-- [ ] #3 Spring adapter(s) translate Reactor Flux/Mono into the new port interface.
-- [ ] #4 All existing agent tests updated to exercise the refactored structure without relying on Spring annotations.
+- [x] #1 Agents no longer inject MessageService directly; they depend on a new inbound port contract.
+- [x] #2 Agent reactive behaviour (subscribe/publish lifecycle) is implemented without direct Reactor dependencies in domain-level code.
+- [x] #3 Spring adapter(s) translate Reactor Flux/Mono into the new port interface.
+- [x] #4 All existing agent tests updated to exercise the refactored structure without relying on Spring annotations.
 <!-- AC:END -->
 
 ## Implementation Plan
