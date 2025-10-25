@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-25 10:34'
-updated_date: '2025-10-25 17:45'
+updated_date: '2025-10-25 18:06'
 labels: []
 dependencies: []
 ---
@@ -58,4 +58,11 @@ Implementation Plan:
 - Added `core-domain` Maven module to parent build with JUnit-only dependencies.
 - Created initial package structure and README describing domain-only guidelines.
 - Next: move `MessageEnvelope`, `ModerationEvent`, and related rules into the new module and update downstream modules.
+
+### Updates
+- Migrated `MessageEnvelope` and moderation value objects (`ModerationEvent`, `ModerationDecision`, `AgentMessageContext`) into the new `core-domain` module, keeping them framework-free.
+- Refactored event-bus and web-app (controllers, services, agents, SSE adapter, tests) to depend on the shared domain types; removed duplicate definitions.
+- Added domain-level unit tests for message envelopes and moderation decisions.
+- Verified build via `mvn -pl core-domain test`, `mvn -pl event-bus -am test -DskipITs`, and `mvn -pl web-app -am compile` (web-app tests still avoided due to external OpenAI calls).
+- Documentation (`core-domain/README.md`) notes the domain module responsibilities.
 <!-- SECTION:NOTES:END -->
