@@ -1,10 +1,11 @@
 ---
 id: task-26
 title: Adapt Spring infrastructure to new ports
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 19:29'
+updated_date: '2025-10-25 19:31'
 labels: []
 dependencies: []
 ---
