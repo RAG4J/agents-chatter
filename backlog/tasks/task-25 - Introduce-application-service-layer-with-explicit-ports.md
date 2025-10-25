@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - codex
 created_date: '2025-10-25 10:35'
-updated_date: '2025-10-25 18:58'
+updated_date: '2025-10-25 19:15'
 labels: []
 dependencies: []
 ---
@@ -50,3 +50,14 @@ Implementation Plan:
    - Add README or design doc describing the application layer layout and responsibilities.
    - Write targeted tests (unit or integration) validating application services independently of Spring, covering moderation + messaging flows.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+### Progress
+- Added `application-services` module with README documenting purpose.
+- Defined outbound ports (`MessagePublicationPort`, `ModerationPolicyPort`, `ModerationEventPort`) and implemented `ConversationApplicationService` with `PublishCommand`/`PublishResult` orchestration.
+- Adapted `MessageService`, `ModeratorService`, and `ModerationEventPublisher` to satisfy new ports; introduced Spring config wiring the application service.
+- Simplified `ConversationCoordinator` to delegate to the application service; updated adapters (controllers, WebSocket, agents) and unit tests accordingly.
+- Verified build: `mvn -pl application-services compile`, `mvn -pl event-bus -am test -DskipITs`, `mvn -pl web-app -am compile` (skipping web-app tests due to external AI dependency).
+<!-- SECTION:NOTES:END -->
