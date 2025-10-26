@@ -2,6 +2,10 @@ package org.rag4j.chatter.web.agents;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -30,6 +34,7 @@ class EchoAgentTests {
     private MessageBus messageBus;
     private MessageService messageService;
     private PresenceService presenceService;
+    private AgentRegistry agentRegistry;
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private EchoAgent subscriber;
@@ -39,6 +44,8 @@ class EchoAgentTests {
     @BeforeEach
     void setUp() {
         presenceService = mock(PresenceService.class);
+        agentRegistry = mock(AgentRegistry.class);
+        when(agentRegistry.isActive(anyString())).thenReturn(true);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         moderatorService = new TestModeratorService();
@@ -46,6 +53,7 @@ class EchoAgentTests {
         conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
         agentPublisher = new AgentPublisher(conversationCoordinator);
         subscriber = new EchoAgent(messageService, agentPublisher, presenceService);
+        subscriber.agentRegistry = agentRegistry;  // Inject mock
         subscriber.subscribe();
     }
 

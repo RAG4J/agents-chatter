@@ -1,6 +1,8 @@
 package org.rag4j.chatter.web.agents;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -30,6 +32,7 @@ class SubscriberAgentPlaceholderTests {
     private MessageBus messageBus;
     private MessageService messageService;
     private PresenceService presenceService;
+    private AgentRegistry agentRegistry;
     private ConversationCoordinator conversationCoordinator;
     private AgentPublisher agentPublisher;
     private TestPlaceholderAgent subscriber;
@@ -39,6 +42,8 @@ class SubscriberAgentPlaceholderTests {
     @BeforeEach
     void setUp() {
         presenceService = mock(PresenceService.class);
+        agentRegistry = mock(AgentRegistry.class);
+        when(agentRegistry.isActive(anyString())).thenReturn(true);
         messageBus = new ReactorMessageBus();
         messageService = new MessageService(messageBus);
         moderatorService = new TestModeratorService();
@@ -46,6 +51,7 @@ class SubscriberAgentPlaceholderTests {
         conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
         agentPublisher = new AgentPublisher(conversationCoordinator);
         subscriber = new TestPlaceholderAgent(messageService, agentPublisher, presenceService);
+        subscriber.agentRegistry = agentRegistry;  // Inject mock
         subscriber.subscribe();
     }
 

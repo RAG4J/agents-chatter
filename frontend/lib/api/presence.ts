@@ -5,6 +5,7 @@ export interface PresenceDto {
   role: PresenceRole;
   online: boolean;
   connections: number;
+  active: boolean;
 }
 
 const API_BASE =
@@ -44,4 +45,24 @@ export function subscribePresence(
   return () => {
     source.close();
   };
+}
+
+export async function activateAgent(agentName: string): Promise<PresenceDto> {
+  const response = await fetch(`${PRESENCE_ENDPOINT}/${encodeURIComponent(agentName)}/activate`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to activate agent: ${response.statusText}`);
+  }
+  return (await response.json()) as PresenceDto;
+}
+
+export async function deactivateAgent(agentName: string): Promise<PresenceDto> {
+  const response = await fetch(`${PRESENCE_ENDPOINT}/${encodeURIComponent(agentName)}/deactivate`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to deactivate agent: ${response.statusText}`);
+  }
+  return (await response.json()) as PresenceDto;
 }

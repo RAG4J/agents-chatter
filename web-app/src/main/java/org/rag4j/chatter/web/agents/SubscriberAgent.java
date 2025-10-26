@@ -9,6 +9,7 @@ import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class SubscriberAgent {
 
@@ -20,6 +21,9 @@ public abstract class SubscriberAgent {
     private final String agentName;
     private final PresenceRole role;
     private Disposable subscription;
+    
+    @Autowired
+    AgentRegistry agentRegistry;  // Package-private for testing
 
     public SubscriberAgent(String agentName,
             PresenceRole role,
@@ -36,6 +40,9 @@ public abstract class SubscriberAgent {
     @PostConstruct
     public void subscribe() {
         logger().info("Registering {} subscriber", agentName);
+        if (agentRegistry != null) {
+            agentRegistry.register(agentName, this, true);
+        }
         if (presenceService != null) {
             presenceService.markOnline(agentName, role);
         }
@@ -58,6 +65,12 @@ public abstract class SubscriberAgent {
     }
 
     protected void publishResponse(MessageEnvelope incoming) {
+        // Check if agent is active before processing
+        if (agentRegistry != null && !agentRegistry.isActive(agentName)) {
+            logger().debug("{} is inactive, skipping message", agentName);
+            return;
+        }
+        
         messagePayload(incoming)
                 .map(responsePayload -> responsePayload == null ? "" : responsePayload.trim())
                 .flatMap(responsePayload -> {

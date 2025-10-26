@@ -1,12 +1,13 @@
 package org.rag4j.chatter.web.presence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.rag4j.chatter.web.agents.AgentRegistry;
 import org.rag4j.chatter.web.presence.PresenceRole;
 
 import reactor.test.StepVerifier;
@@ -18,7 +19,8 @@ class PresenceServiceTests {
     @BeforeEach
     void setUp() {
         ChatParticipantsProperties properties = new ChatParticipantsProperties();
-        presenceService = new PresenceService(properties);
+        AgentRegistry agentRegistry = mock(AgentRegistry.class);
+        presenceService = new PresenceService(properties, agentRegistry);
     }
 
     @Test

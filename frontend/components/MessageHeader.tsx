@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  Avatar,
-  AvatarGroup,
   Badge,
   Box,
   Flex,
@@ -17,12 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { IoMoon, IoSunny, IoTrashOutline } from "react-icons/io5";
 
-import { PresenceDto } from "@/lib/api/presence";
-
 interface MessageHeaderProps {
   status: "idle" | "connecting" | "open" | "closed" | "error";
   source: "backend" | "mock";
-  participants?: PresenceDto[];
   onClear?: () => void | Promise<void>;
 }
 
@@ -37,12 +32,11 @@ const statusConfig: Record<
   error: { label: "Realtime error", color: "red" }
 };
 
-export function MessageHeader({ status, source, participants = [], onClear }: MessageHeaderProps) {
+export function MessageHeader({ status, source, onClear }: MessageHeaderProps) {
   const { toggleColorMode, colorMode } = useColorMode();
   const bg = useColorModeValue("white", "whiteAlpha.200");
   const headingColor = useColorModeValue("gray.800", "gray.100");
   const statusColor = useColorModeValue("gray.600", "gray.400");
-  const onlineColor = useColorModeValue("gray.600", "gray.400");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const icon = colorMode === "light" ? <IoMoon /> : <IoSunny />;
   const config = statusConfig[status];
@@ -68,20 +62,7 @@ export function MessageHeader({ status, source, participants = [], onClear }: Me
           {config.label}
         </Text>
       </Stack>
-      <Stack spacing={2} align="center">
-        <AvatarGroup size="sm" max={5}>
-          {participants
-            .filter((participant) => participant.online)
-            .map((participant) => (
-              <Tooltip key={participant.name} label={`${participant.name} (${participant.role.toLowerCase()})`}>
-                <Avatar
-                  name={participant.name}
-                  size="sm"
-                  bg={participant.role === "AGENT" ? "brand.500" : "gray.500"}
-                />
-              </Tooltip>
-            ))}
-        </AvatarGroup>
+      <HStack spacing={3}>
         <Badge colorScheme={config.color} variant="subtle">
           {status.toUpperCase()}
         </Badge>
@@ -90,11 +71,6 @@ export function MessageHeader({ status, source, participants = [], onClear }: Me
             Mock data
           </Badge>
         )}
-      </Stack>
-      <HStack spacing={3}>
-        <Text fontSize="sm" color={onlineColor}>
-          {participants.filter((participant) => participant.online).length} online
-        </Text>
         {onClear && (
           <Tooltip label="Clear all messages and moderation events">
             <IconButton

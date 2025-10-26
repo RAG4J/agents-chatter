@@ -16,6 +16,7 @@ import {
   useColorModeValue
 } from "@chakra-ui/react";
 
+import { AgentControlPanel } from "@/components/AgentControlPanel";
 import { MessageComposer } from "@/components/MessageComposer";
 import { MessageHeader } from "@/components/MessageHeader";
 import { MessageList } from "@/components/MessageList";
@@ -65,16 +66,21 @@ export default function ChatShell() {
         <MessageHeader
           status={status}
           source={source}
-          participants={participants}
           onClear={async () => {
             await clearMessages();
             await clearModerationEvents();
           }}
         />
         <Grid
-          templateColumns={{ base: "1fr", lg: "3fr 2fr" }}
-          gap={{ base: 6, lg: 10 }}
+          templateColumns={{ base: "1fr", lg: "1fr 2fr 1.5fr" }}
+          gap={{ base: 6, lg: 6 }}
         >
+          {/* Agent Control Sidebar */}
+          <GridItem display={{ base: "none", lg: "block" }}>
+            <AgentControlPanel participants={participants} />
+          </GridItem>
+          
+          {/* Main Chat Panel */}
           <GridItem>
             <Flex
               direction="column"
@@ -115,6 +121,8 @@ export default function ChatShell() {
               </Box>
             </Flex>
           </GridItem>
+          
+          {/* Insights Panel */}
           <GridItem>
             <Stack
               spacing={4}
@@ -199,6 +207,11 @@ export default function ChatShell() {
                   to see the split layout.
                 </Text>
               )}
+              
+              {/* Mobile Agent Control */}
+              <Box display={{ base: "block", lg: "none" }} mt={4}>
+                <AgentControlPanel participants={participants} />
+              </Box>
             </Stack>
           </GridItem>
         </Grid>

@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.rag4j.chatter.web.agents.AgentRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,19 @@ public class PresenceService {
 
     private final Map<String, PresenceEntry> participants = new ConcurrentHashMap<>();
     private final Sinks.Many<List<PresenceStatus>> sink = Sinks.many().replay().latest();
+    private final AgentRegistry agentRegistry;
 
-    public PresenceService(ChatParticipantsProperties properties) {
+    public PresenceService(ChatParticipantsProperties properties, AgentRegistry agentRegistry) {
+        this.agentRegistry = agentRegistry;
         properties.getAgents().forEach(agent -> participants.putIfAbsent(
-            normalize(agent.name()), new PresenceEntry(new PresenceParticipant(agent.name(), agent.role()))));
+            normalize(agent.name()), new PresenceEntry(new PresenceParticipant(agent.name(), agent.role(), true))));
         var human = properties.getHuman();
-        participants.putIfAbsent(normalize(human.name()), new PresenceEntry(new PresenceParticipant(human.name(), human.role())));
+        participants.putIfAbsent(normalize(human.name()), new PresenceEntry(new PresenceParticipant(human.name(), human.role(), true)));
         emitSnapshot();
     }
 
     public void markOnline(String name, PresenceRole role) {
-        PresenceEntry entry = participants.computeIfAbsent(normalize(name), key -> new PresenceEntry(new PresenceParticipant(name, role)));
+        PresenceEntry entry = participants.computeIfAbsent(normalize(name), key -> new PresenceEntry(new PresenceParticipant(name, role, true)));
         entry.increment();
         logger.debug("Presence online: {} (count={})", entry.participant().name(), entry.count());
         emitSnapshot();
@@ -55,10 +58,33 @@ public class PresenceService {
         return sink.asFlux();
     }
 
+    public void setAgentActive(String name, boolean active) {
+        PresenceEntry entry = participants.get(normalize(name));
+        if (entry == null) {
+            throw new IllegalArgumentException("Participant not found: " + name);
+        }
+        if (entry.participant().role() != PresenceRole.AGENT) {
+            throw new IllegalArgumentException("Cannot change active state for non-agent: " + name);
+        }
+        
+        agentRegistry.setActive(name, active);
+        entry.setActive(active);
+        logger.info("Agent '{}' active state changed to {}", name, active);
+        emitSnapshot();
+    }
+
+    public boolean isAgentActive(String name) {
+        PresenceEntry entry = participants.get(normalize(name));
+        if (entry == null || entry.participant().role() != PresenceRole.AGENT) {
+            return false;
+        }
+        return entry.isActive();
+    }
+
     private List<PresenceStatus> currentStatuses() {
         List<PresenceStatus> statuses = new ArrayList<>();
         for (PresenceEntry entry : participants.values()) {
-            statuses.add(new PresenceStatus(entry.participant(), entry.count() > 0, entry.count()));
+            statuses.add(new PresenceStatus(entry.participant(), entry.count() > 0, entry.count(), entry.isActive()));
         }
         statuses.sort((a, b) -> {
             int roleCompare = a.participant().role().compareTo(b.participant().role());
@@ -81,10 +107,12 @@ public class PresenceService {
     private static final class PresenceEntry {
         private final PresenceParticipant participant;
         private int count;
+        private boolean active;
 
         private PresenceEntry(PresenceParticipant participant) {
             this.participant = participant;
             this.count = 0;
+            this.active = participant.active();
         }
 
         private PresenceParticipant participant() {
@@ -103,6 +131,14 @@ public class PresenceService {
 
         private synchronized int count() {
             return count;
+        }
+
+        private synchronized void setActive(boolean active) {
+            this.active = active;
+        }
+
+        private synchronized boolean isActive() {
+            return active;
         }
     }
 }

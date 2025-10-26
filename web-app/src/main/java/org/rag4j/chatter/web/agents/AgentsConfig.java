@@ -11,19 +11,16 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class AgentsConfig {
 
     @Bean
-    @Profile("echo-agent")
     public EchoAgent echoAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
         return new EchoAgent(messageService, agentPublisher, presenceService);
     }
 
     @Bean
-    @Profile("football-agent")
     public FootballAgent footballAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
                                        MessageService messageService,
@@ -34,7 +31,6 @@ public class AgentsConfig {
     }
 
     @Bean
-    @Profile("apeldoornit-agent")
     public ApeldoornITScheduleAgent apeldoornITScheduleAgent(ChatModel chatModel,
                                                              ChatMemory chatMemory,
                                                              MessageService messageService,
@@ -45,7 +41,6 @@ public class AgentsConfig {
     }
 
     @Bean
-    @Profile("starwars-agent")
     public StarWarsAgent starWarsAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
                                        MessageService messageService,
@@ -55,7 +50,6 @@ public class AgentsConfig {
     }
 
     @Bean
-    @Profile("startrek-agent")
     public StarTrekAgent starTrekAgent(ChatModel chatModel,
                                        ChatMemory chatMemory,
                                        MessageService messageService,
