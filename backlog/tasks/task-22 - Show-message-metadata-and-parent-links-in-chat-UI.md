@@ -2,9 +2,10 @@
 id: task-22
 title: Show message metadata and parent links in chat UI
 status: To Do
-assignee: []
+assignee:
+  - '@codex'
 created_date: '2025-10-25 08:34'
-updated_date: '2025-10-25 23:54'
+updated_date: '2025-10-26 00:08'
 labels: []
 dependencies: []
 ---
