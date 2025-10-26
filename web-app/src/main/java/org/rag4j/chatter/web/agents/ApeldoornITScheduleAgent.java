@@ -1,17 +1,17 @@
 package org.rag4j.chatter.web.agents;
 
-import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-public class ApeldoornITScheduleAgent extends SubscriberAgent {
+@Component
+public class ApeldoornITScheduleAgent implements Agent {
 
     private static final Logger logger = LoggerFactory.getLogger(ApeldoornITScheduleAgent.class);
 
@@ -19,24 +19,28 @@ public class ApeldoornITScheduleAgent extends SubscriberAgent {
 
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
+    private final AgentLifecycleManager lifecycleManager;
 
-    public ApeldoornITScheduleAgent(MessageService messageService,
-                                    AgentPublisher agentPublisher,
-                                    PresenceService presenceService,
-                                    ChatClient chatClient,
-                                    ChatMemory chatMemory) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
+    public ApeldoornITScheduleAgent(ChatClient chatClient, ChatMemory chatMemory, AgentLifecycleManager lifecycleManager) {
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
+        this.lifecycleManager = lifecycleManager;
+    }
+
+    @PostConstruct
+    public void init() {
+        lifecycleManager.subscribeAgent(this);
     }
 
     @Override
-    Logger logger() {
-        return logger;
+    public String name() {
+        return AGENT_NAME;
     }
 
     @Override
-    Mono<String> messagePayload(String incomingPayload) {
+    public Mono<String> processMessage(String payload) {
+        logger.debug("ApeldoornITScheduleAgent processMessage: {}", payload);
+
         String prompt = """
                 You are an AI agent that knows everything about the schedule of the event Apeldoorn IT.
                 If you see a message about the events schedule use the knowledge about the schedule to answer the question.
@@ -227,12 +231,12 @@ public class ApeldoornITScheduleAgent extends SubscriberAgent {
         String userMessage = String.format("""
                 Here is the message to answer:
                 %s
-                """, incomingPayload);
+                """, payload);
 
-        return Mono.fromCallable(() -> this.chatClient.prompt()
+        return Mono.fromCallable(() -> chatClient.prompt()
                 .system(prompt)
                 .user(userMessage)
-                .advisors(MessageChatMemoryAdvisor.builder(this.chatMemory).conversationId(AGENT_NAME).build())
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(AGENT_NAME).build())
                 .call()
                 .content()).subscribeOn(Schedulers.boundedElastic());
     }

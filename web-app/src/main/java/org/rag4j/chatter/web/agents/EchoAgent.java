@@ -2,48 +2,42 @@ package org.rag4j.chatter.web.agents;
 
 import java.time.Duration;
 
+import jakarta.annotation.PostConstruct;
 import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
 import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
-import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
-public class EchoAgent extends SubscriberAgent {
+@Component
+public class EchoAgent implements Agent {
     private static final Logger logger = LoggerFactory.getLogger(EchoAgent.class);
 
     public static final String AGENT_NAME = "Echo Agent";
 
-    private Disposable subscription;
+    private final AgentLifecycleManager lifecycleManager;
 
-    public EchoAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
+    public EchoAgent(AgentLifecycleManager lifecycleManager) {
+        this.lifecycleManager = lifecycleManager;
     }
 
-
-    @Override
-    Logger logger() {
-        return logger;
-    }
-
-    @Override
-    protected Mono<String> messagePayload(MessageEnvelope incoming) {
-        if (incoming.originType() == MessageOrigin.AGENT && incoming.agentReplyDepth() >= 2) {
-            logger.info("Skipping echo due to agent depth {} on thread {}", incoming.agentReplyDepth(), incoming.threadId());
-            return Mono.empty();
-        }
-        return super.messagePayload(incoming);
+    @PostConstruct
+    public void init() {
+        lifecycleManager.subscribeAgent(this);
     }
 
     @Override
-    Mono<String> messagePayload(String incomingPayload) {
-        // Put a short timeout here to simulate processing delay
-
-        return Mono.just("echo " + incomingPayload).delayElement(Duration.ofMillis(100));
+    public String name() {
+        return AGENT_NAME;
     }
 
+    @Override
+    public Mono<String> processMessage(String payload) {
+        logger.debug("EchoAgent processMessage: {}", payload);
+
+        // Simple echo with simulated processing delay
+        return Mono.just("echo " + payload).delayElement(Duration.ofMillis(100));
+    }
 }

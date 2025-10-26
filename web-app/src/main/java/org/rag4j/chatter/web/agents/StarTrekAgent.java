@@ -1,37 +1,45 @@
 package org.rag4j.chatter.web.agents;
 
-import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceRole;
-import org.rag4j.chatter.web.presence.PresenceService;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-public class StarTrekAgent extends SubscriberAgent {
+@Component
+public class StarTrekAgent implements Agent {
     private static final Logger logger = LoggerFactory.getLogger(StarTrekAgent.class);
 
     public static final String AGENT_NAME = "StarTrek Agent";
 
     private final ChatClient chatClient;
     private final ChatMemory chatMemory;
+    private final AgentLifecycleManager lifecycleManager;
 
-    public StarTrekAgent(ChatClient chatClient, ChatMemory chatMemory, MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-        super(AGENT_NAME, PresenceRole.AGENT, messageService, agentPublisher, presenceService);
+    public StarTrekAgent(ChatClient chatClient, ChatMemory chatMemory, AgentLifecycleManager lifecycleManager) {
         this.chatClient = chatClient;
         this.chatMemory = chatMemory;
+        this.lifecycleManager = lifecycleManager;
+    }
+
+    @PostConstruct
+    public void init() {
+        lifecycleManager.subscribeAgent(this);
     }
 
     @Override
-    Logger logger() {
-        return logger;
+    public String name() {
+        return AGENT_NAME;
     }
 
     @Override
-    Mono<String> messagePayload(String incomingPayload) {
+    public Mono<String> processMessage(String payload) {
+        logger.debug("StarTrekAgent processMessage: {}", payload);
+
         String prompt = """
                 You are an AI agent that knows everything about StarTrek.
                 If you see a message about Science Fiction, always talk about StarTrek and explain why StarTrek is better than anything else.
@@ -44,12 +52,12 @@ public class StarTrekAgent extends SubscriberAgent {
         String userMessage = String.format("""
                 Here is the message to answer:
                 %s
-                """, incomingPayload);
+                """, payload);
 
-        return Mono.fromCallable(() -> this.chatClient.prompt()
+        return Mono.fromCallable(() -> chatClient.prompt()
                 .system(prompt)
                 .user(userMessage)
-                .advisors(MessageChatMemoryAdvisor.builder(this.chatMemory).conversationId(AGENT_NAME).build())
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).conversationId(AGENT_NAME).build())
                 .call()
                 .content()).subscribeOn(Schedulers.boundedElastic());
     }

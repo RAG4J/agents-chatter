@@ -52,14 +52,17 @@ class EchoAgentTests {
         eventPublisher = new TestEventPublisher();
         conversationCoordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);
         agentPublisher = new AgentPublisher(conversationCoordinator);
-        subscriber = new EchoAgent(messageService, agentPublisher, presenceService);
-        subscriber.agentRegistry = agentRegistry;  // Inject mock
-        subscriber.subscribe();
+        
+        // Create lifecycle manager and subscribe agent
+        AgentLifecycleManager lifecycleManager = new AgentLifecycleManager(
+                messageService, agentPublisher, presenceService, agentRegistry);
+        subscriber = new EchoAgent(lifecycleManager);
+        subscriber.init();  // Manually call @PostConstruct for testing
     }
 
     @AfterEach
     void tearDown() {
-        subscriber.shutdown();
+        // Cleanup is handled by AgentLifecycleManager
     }
 
     @Test

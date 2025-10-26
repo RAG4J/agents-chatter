@@ -15,9 +15,9 @@ public class AgentRegistry {
 
     private final Map<String, AgentRegistration> agents = new ConcurrentHashMap<>();
 
-    public void register(String agentName, SubscriberAgent agent, boolean initiallyActive) {
+    public void register(String agentName, boolean initiallyActive) {
         String normalizedName = normalize(agentName);
-        agents.put(normalizedName, new AgentRegistration(agent, initiallyActive));
+        agents.put(normalizedName, new AgentRegistration(initiallyActive));
         logger.info("Registered agent '{}' with active={}", agentName, initiallyActive);
     }
 
@@ -46,16 +46,10 @@ public class AgentRegistry {
     }
 
     private static class AgentRegistration {
-        private final SubscriberAgent agent;
         private volatile boolean active;
 
-        AgentRegistration(SubscriberAgent agent, boolean active) {
-            this.agent = agent;
+        AgentRegistration(boolean active) {
             this.active = active;
-        }
-
-        SubscriberAgent getAgent() {
-            return agent;
         }
 
         synchronized boolean isActive() {

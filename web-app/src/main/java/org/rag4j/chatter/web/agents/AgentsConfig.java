@@ -16,48 +16,9 @@ import org.springframework.context.annotation.Configuration;
 public class AgentsConfig {
 
     @Bean
-    public EchoAgent echoAgent(MessageService messageService, AgentPublisher agentPublisher, PresenceService presenceService) {
-        return new EchoAgent(messageService, agentPublisher, presenceService);
+    public ChatClient chatClient(ChatModel chatModel) {
+        return ChatClient.builder(chatModel).build();
     }
-
-    @Bean
-    public FootballAgent footballAgent(ChatModel chatModel,
-                                       ChatMemory chatMemory,
-                                       MessageService messageService,
-                                       AgentPublisher agentPublisher,
-                                       PresenceService presenceService) {
-
-        return new FootballAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
-    }
-
-    @Bean
-    public ApeldoornITScheduleAgent apeldoornITScheduleAgent(ChatModel chatModel,
-                                                             ChatMemory chatMemory,
-                                                             MessageService messageService,
-                                                             AgentPublisher agentPublisher,
-                                                             PresenceService presenceService) {
-        return new ApeldoornITScheduleAgent(messageService, agentPublisher, presenceService,
-                ChatClient.builder(chatModel).build(), chatMemory);
-    }
-
-    @Bean
-    public StarWarsAgent starWarsAgent(ChatModel chatModel,
-                                       ChatMemory chatMemory,
-                                       MessageService messageService,
-                                       AgentPublisher agentPublisher,
-                                       PresenceService presenceService) {
-        return new StarWarsAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
-    }
-
-    @Bean
-    public StarTrekAgent starTrekAgent(ChatModel chatModel,
-                                       ChatMemory chatMemory,
-                                       MessageService messageService,
-                                       AgentPublisher agentPublisher,
-                                       PresenceService presenceService) {
-        return new StarTrekAgent(ChatClient.builder(chatModel).build(), chatMemory, messageService, agentPublisher, presenceService);
-    }
-
 
     @Bean
     public ChatMemory chatMemory() {
