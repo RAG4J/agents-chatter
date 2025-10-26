@@ -23,6 +23,7 @@
     <modules>
         <module>core</module>
         <module>event-bus</module>
+        <module>agents</module>
         <module>web-app</module>
         <module>frontend</module>
     </modules>
@@ -36,6 +37,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
@@ -44,15 +46,23 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- Internal Dependencies-->
             <dependency>
                 <groupId>org.rag4j.chatter</groupId>
                 <artifactId>agents-chatter-core</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.rag4j.chatter</groupId>
+                <artifactId>agents-chatter-agents</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.rag4j.chatter</groupId>
                 <artifactId>event-bus</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- Prevent CVEs-->
@@ -61,6 +71,14 @@
                 <artifactId>logback-core</artifactId>
                 <version>1.5.19</version>
             </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.5.19</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 

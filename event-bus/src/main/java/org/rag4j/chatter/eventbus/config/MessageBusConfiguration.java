@@ -1,7 +1,7 @@
 package org.rag4j.chatter.eventbus.config;
 
 import org.rag4j.chatter.core.message.MessageBus;
-import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
+import org.rag4j.chatter.eventbus.bus.InMemoryMessageBus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,6 +13,6 @@ public class MessageBusConfiguration {
 
     @Bean
     public MessageBus messageBus() {
-        return new ReactorMessageBus();
+        return new InMemoryMessageBus();
     }
 }

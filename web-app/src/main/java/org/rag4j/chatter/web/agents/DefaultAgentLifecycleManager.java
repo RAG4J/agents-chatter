@@ -2,6 +2,8 @@ package org.rag4j.chatter.web.agents;
 
 import jakarta.annotation.PreDestroy;
 import org.rag4j.chatter.core.agent.Agent;
+import org.rag4j.chatter.core.agent.AgentLifecycleManager;
+import org.rag4j.chatter.core.agent.AgentRegistry;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.rag4j.chatter.core.presence.PresenceRole;
 import org.rag4j.chatter.web.messages.MessageService;
@@ -32,9 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * while this manager handles all cross-cutting concerns.
  */
 @Service
-public class AgentLifecycleManager {
+public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(AgentLifecycleManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultAgentLifecycleManager.class);
 
     private final MessageService messageService;
     private final AgentPublisher agentPublisher;
@@ -42,7 +44,7 @@ public class AgentLifecycleManager {
     private final AgentRegistry agentRegistry;
     private final Map<String, Disposable> subscriptions = new ConcurrentHashMap<>();
 
-    public AgentLifecycleManager(
+    public DefaultAgentLifecycleManager(
             MessageService messageService,
             AgentPublisher agentPublisher,
             PresenceService presenceService,
@@ -59,6 +61,7 @@ public class AgentLifecycleManager {
      * 
      * @param agent the agent to subscribe
      */
+    @Override
     public void subscribeAgent(Agent agent) {
         String agentName = agent.name();
         
@@ -94,6 +97,7 @@ public class AgentLifecycleManager {
      * 
      * @param agent the agent to unsubscribe
      */
+    @Override
     public void unsubscribeAgent(Agent agent) {
         String agentName = agent.name();
         

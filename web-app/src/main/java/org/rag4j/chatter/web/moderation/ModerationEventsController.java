@@ -1,7 +1,6 @@
-package org.rag4j.chatter.web.api;
+package org.rag4j.chatter.web.moderation;
 
 import org.rag4j.chatter.core.moderation.ModerationEvent;
-import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;

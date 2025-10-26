@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.api;
+package org.rag4j.chatter.web.agents;
 
 import java.util.List;
 
@@ -21,11 +21,11 @@ import reactor.core.publisher.Flux;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/presence")
-public class PresenceController {
+public class AgentPresenceController {
 
     private final PresenceService presenceService;
 
-    public PresenceController(PresenceService presenceService) {
+    public AgentPresenceController(PresenceService presenceService) {
         this.presenceService = presenceService;
     }
 

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
-import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
+import org.rag4j.chatter.eventbus.bus.InMemoryMessageBus;
 import org.rag4j.chatter.core.moderation.ModerationDecision;
 import org.rag4j.chatter.core.moderation.ModerationEvent;
 import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
@@ -23,7 +23,7 @@ class ConversationCoordinatorTests {
 
     @BeforeEach
     void setUp() {
-        messageService = new MessageService(new ReactorMessageBus());
+        messageService = new MessageService(new InMemoryMessageBus());
         moderatorService = context -> ModerationDecision.approve();
         eventPublisher = new TestEventPublisher();
         coordinator = new ConversationCoordinator(messageService, 2, moderatorService, eventPublisher);

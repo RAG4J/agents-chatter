@@ -1,7 +1,8 @@
-package org.rag4j.chatter.web.agents;
+package org.rag4j.chatter.agents;
 
 import org.rag4j.chatter.core.agent.Agent;
 import jakarta.annotation.PostConstruct;
+import org.rag4j.chatter.core.agent.AgentLifecycleManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;

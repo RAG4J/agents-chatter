@@ -1,10 +1,6 @@
 spring:
   application:
-    name: web-app
-  profiles:
-    # available profiles: echo-agent,  football-agent, apeldoornit-agent, starwars-agent, startrek-agent
-    active: football-agent,apeldoornit-agent,starwars-agent,startrek-agent
-    default: echo-agent
+    name: Agentic Chatter Web App
   ai:
     openai:
       chat:
@@ -14,6 +10,7 @@ spring:
 logging:
   level:
     org.rag4j.chatter: INFO
+    org.rag4j.chatter.agents: DEBUG
 moderator:
   loop-alternations-threshold: 4
   agent-cooldown: 1

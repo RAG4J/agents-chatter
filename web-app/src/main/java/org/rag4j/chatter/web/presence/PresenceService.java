@@ -7,10 +7,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.rag4j.chatter.core.agent.AgentRegistry;
 import org.rag4j.chatter.core.presence.PresenceParticipant;
 import org.rag4j.chatter.core.presence.PresenceRole;
 import org.rag4j.chatter.core.presence.PresenceStatus;
-import org.rag4j.chatter.web.agents.AgentRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,6 @@ public class PresenceService {
 
     public PresenceService(ChatParticipantsProperties properties, AgentRegistry agentRegistry) {
         this.agentRegistry = agentRegistry;
-        properties.getAgents().forEach(agent -> participants.putIfAbsent(
-            normalize(agent.name()), new PresenceEntry(new PresenceParticipant(agent.name(), agent.role(), true))));
         var human = properties.getHuman();
         participants.putIfAbsent(normalize(human.name()), new PresenceEntry(new PresenceParticipant(human.name(), human.role(), true)));
         emitSnapshot();

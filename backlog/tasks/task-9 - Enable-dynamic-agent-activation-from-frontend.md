@@ -27,7 +27,7 @@ Allow agents to be started or stopped dynamically without relying on Spring prof
 
 <!-- SECTION:PLAN:BEGIN -->
 Core Components
-AgentRegistry (org.rag4j.chatter.web.agents.AgentRegistry)
+AgentRegistry (org.rag4j.chatter.core.agent.AgentRegistry)
 
 Central service managing agent instances and their activation state
 Thread-safe operations using ConcurrentHashMap

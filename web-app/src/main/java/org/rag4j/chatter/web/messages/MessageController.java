@@ -1,13 +1,10 @@
-package org.rag4j.chatter.web.api;
+package org.rag4j.chatter.web.messages;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
-import org.rag4j.chatter.web.messages.ConversationCoordinator;
-import org.rag4j.chatter.web.messages.MessageDto;
-import org.rag4j.chatter.web.messages.MessageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;

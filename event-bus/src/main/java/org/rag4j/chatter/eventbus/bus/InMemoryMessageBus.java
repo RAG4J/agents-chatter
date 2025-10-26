@@ -14,18 +14,18 @@ import reactor.core.publisher.Sinks;
 /**
  * Message bus backed by a Reactor {@link Sinks.Many} instance.
  */
-public class ReactorMessageBus implements MessageBus {
+public class InMemoryMessageBus implements MessageBus {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReactorMessageBus.class);
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryMessageBus.class);
 
     private final Sinks.Many<MessageEnvelope> sink;
     private final Flux<MessageEnvelope> sharedFlux;
 
-    public ReactorMessageBus() {
+    public InMemoryMessageBus() {
         this(Sinks.many().multicast().directAllOrNothing());
     }
 
-    public ReactorMessageBus(Sinks.Many<MessageEnvelope> sink) {
+    public InMemoryMessageBus(Sinks.Many<MessageEnvelope> sink) {
         this.sink = Objects.requireNonNull(sink, "sink must not be null");
         this.sharedFlux = this.sink.asFlux();
     }

@@ -3,19 +3,17 @@ package org.rag4j.chatter.eventbus.bus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-class ReactorMessageBusTests {
+class InMemoryMessageBusTests {
 
     @Test
     void distributesMessagesToMultipleSubscribers() {
-        var bus = new ReactorMessageBus();
+        var bus = new InMemoryMessageBus();
         var firstCollector = bus.stream().take(2).collectList();
         var secondCollector = bus.stream().take(2).collectList();
 
@@ -39,7 +37,7 @@ class ReactorMessageBusTests {
 
     @Test
     void publishFailsWhenNoSubscribers() {
-        var bus = new ReactorMessageBus();
+        var bus = new InMemoryMessageBus();
         var message = MessageEnvelope.from("system", "No listeners yet");
 
         assertThat(bus.publish(message)).isFalse();
@@ -47,14 +45,14 @@ class ReactorMessageBusTests {
 
     @Test
     void rejectsNullMessages() {
-        var bus = new ReactorMessageBus();
+        var bus = new InMemoryMessageBus();
         assertThatThrownBy(() -> bus.publish(null))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void lateSubscribersOnlyReceiveNewMessages() {
-        var bus = new ReactorMessageBus();
+        var bus = new InMemoryMessageBus();
         var earlyCollector = bus.stream().take(1).collectList();
 
         StepVerifier.create(earlyCollector)

@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.api;
+package org.rag4j.chatter.web.socket;
 
 import java.time.Instant;
 import java.util.Map;

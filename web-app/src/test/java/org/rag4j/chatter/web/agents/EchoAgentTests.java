@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.time.Duration;
@@ -15,10 +14,13 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rag4j.chatter.agents.EchoAgent;
+import org.rag4j.chatter.core.agent.AgentLifecycleManager;
+import org.rag4j.chatter.core.agent.AgentRegistry;
 import org.rag4j.chatter.core.message.MessageBus;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
-import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
+import org.rag4j.chatter.eventbus.bus.InMemoryMessageBus;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.core.moderation.ModerationDecision;
@@ -46,7 +48,7 @@ class EchoAgentTests {
         presenceService = mock(PresenceService.class);
         agentRegistry = mock(AgentRegistry.class);
         when(agentRegistry.isActive(anyString())).thenReturn(true);
-        messageBus = new ReactorMessageBus();
+        messageBus = new InMemoryMessageBus();
         messageService = new MessageService(messageBus);
         moderatorService = new TestModeratorService();
         eventPublisher = new TestEventPublisher();
@@ -54,7 +56,7 @@ class EchoAgentTests {
         agentPublisher = new AgentPublisher(conversationCoordinator);
         
         // Create lifecycle manager and subscribe agent
-        AgentLifecycleManager lifecycleManager = new AgentLifecycleManager(
+        AgentLifecycleManager lifecycleManager = new DefaultAgentLifecycleManager(
                 messageService, agentPublisher, presenceService, agentRegistry);
         subscriber = new EchoAgent(lifecycleManager);
         subscriber.init();  // Manually call @PostConstruct for testing

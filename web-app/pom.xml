@@ -27,16 +27,17 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.rag4j.chatter</groupId>
+            <artifactId>agents-chatter-agents</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
 
         <!-- Spring Boot dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-model-openai</artifactId>
         </dependency>
 
         <!-- Only needed for MacOSX, need to come up with a generic alternative -->
