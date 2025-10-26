@@ -4,7 +4,7 @@ title: Polish light/dark mode for chat header and messages
 status: To Do
 assignee: []
 created_date: '2025-10-25 08:26'
-updated_date: '2025-10-26 08:21'
+updated_date: '2025-10-26 08:23'
 labels: []
 dependencies: []
 ---
@@ -15,18 +15,18 @@ dependencies: []
 Improve theme support by addressing the readability issues in the top navigation/header and message bubbles.
 
 Scope:
-- Audit Chakra UI color usage for the chat shell header and message list/bubbles in both light and dark modes.
+- Audit Chakra UI color usage for the chat shell header, message list/bubbles, and surrounding panels in both light and dark modes.
 - Ensure titles and key labels in the top bar adapt to the active color mode and meet basic contrast requirements.
-- Update chat message backgrounds/text colors to remain legible in both modes without redesigning layout or typography.
+- Refresh light-mode backgrounds/foregrounds for the chat shell, message container, and conversation insights so the experience feels intentional while preserving dark-mode styling.
 
-Out of scope: broader UI restyling, presence panel redesign, or global theme overhaul.
+Out of scope: broader UI layout changes, presence panel redesign, or global theme overhaul.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Top bar titles and status labels remain readable in both light and dark modes (verified manually).
-- [ ] #2 Chat messages (agent + human) maintain adequate contrast in both themes without regression to spacing/layout.
-- [ ] #3 No other components are unintentionally restyled; changes limited to header and message list.
+- [ ] #1 #1 Chat header (titles, status, participant indicators) achieves readable contrast and cohesive styling in light mode while preserving dark mode appearance.
+- [ ] #2 #2 Chat shell, message container, and conversation insights surfaces all adopt mode-appropriate backgrounds/accents with no regressions in dark mode.
+- [ ] #3 #3 Agent and human message bubbles retain legibility and visual hierarchy after the light-mode refresh.
 <!-- AC:END -->
 
 ## Implementation Plan
