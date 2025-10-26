@@ -1,7 +1,7 @@
 ---
 id: task-11
 title: Allow resetting chat history
-status: To Do
+status: Done
 assignee:
   - Warp
 created_date: '2025-10-23 22:52'
