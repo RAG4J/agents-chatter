@@ -1,9 +1,10 @@
 ---
 id: task-9
 title: Enable dynamic agent activation from frontend
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-10-23 22:50'
+updated_date: '2025-10-26 11:45'
 labels: []
 dependencies: []
 ---
