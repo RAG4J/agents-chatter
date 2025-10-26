@@ -9,7 +9,7 @@ import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceService;
-import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.core.presence.PresenceRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

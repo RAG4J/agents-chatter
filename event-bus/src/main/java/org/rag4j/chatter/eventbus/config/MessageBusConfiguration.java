@@ -1,6 +1,6 @@
 package org.rag4j.chatter.eventbus.config;
 
-import org.rag4j.chatter.eventbus.bus.MessageBus;
+import org.rag4j.chatter.core.message.MessageBus;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

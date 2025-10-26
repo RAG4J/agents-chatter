@@ -15,7 +15,11 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- No dependencies - pure Java domain types -->
+        <!-- Reactor for reactive domain contracts (Agent, MessageBus) -->
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

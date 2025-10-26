@@ -2,10 +2,10 @@ package org.rag4j.chatter.web.api;
 
 import java.util.List;
 
-import org.rag4j.chatter.web.presence.PresenceParticipant;
-import org.rag4j.chatter.web.presence.PresenceRole;
+import org.rag4j.chatter.core.presence.PresenceParticipant;
+import org.rag4j.chatter.core.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
-import org.rag4j.chatter.web.presence.PresenceStatus;
+import org.rag4j.chatter.core.presence.PresenceStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;

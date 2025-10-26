@@ -15,7 +15,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.eventbus.bus.MessageBus;
+import org.rag4j.chatter.core.message.MessageBus;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;

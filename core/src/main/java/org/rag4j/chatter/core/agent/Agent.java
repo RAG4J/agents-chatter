@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.agents;
+package org.rag4j.chatter.core.agent;
 
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import reactor.core.publisher.Mono;
@@ -8,8 +8,6 @@ import reactor.core.publisher.Mono;
  * Agents implementing this interface focus solely on transforming input messages
  * into responses, without concern for infrastructure details like subscriptions,
  * lifecycle management, or presence tracking.
- *
- * <p>The framework handles all cross-cutting concerns through {@link AgentLifecycleManager}.
  */
 public interface Agent {
 

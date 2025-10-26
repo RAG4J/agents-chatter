@@ -3,6 +3,7 @@ package org.rag4j.chatter.web.agents;
 import java.time.Duration;
 
 import jakarta.annotation.PostConstruct;
+import org.rag4j.chatter.core.agent.Agent;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
 import org.slf4j.Logger;

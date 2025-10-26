@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import jakarta.annotation.PreDestroy;
 
-import org.rag4j.chatter.eventbus.bus.MessageBus;
+import org.rag4j.chatter.core.message.MessageBus;
 import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.springframework.stereotype.Service;
 

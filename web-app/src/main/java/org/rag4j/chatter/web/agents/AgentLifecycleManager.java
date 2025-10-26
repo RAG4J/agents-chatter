@@ -1,9 +1,10 @@
 package org.rag4j.chatter.web.agents;
 
 import jakarta.annotation.PreDestroy;
+import org.rag4j.chatter.core.agent.Agent;
 import org.rag4j.chatter.core.message.MessageEnvelope;
+import org.rag4j.chatter.core.presence.PresenceRole;
 import org.rag4j.chatter.web.messages.MessageService;
-import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

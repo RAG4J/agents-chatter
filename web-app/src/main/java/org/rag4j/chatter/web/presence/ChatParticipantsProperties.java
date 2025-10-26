@@ -3,6 +3,7 @@ package org.rag4j.chatter.web.presence;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.rag4j.chatter.core.presence.PresenceRole;
 import org.rag4j.chatter.web.agents.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

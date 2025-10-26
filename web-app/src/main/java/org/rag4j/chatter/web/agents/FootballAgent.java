@@ -1,5 +1,6 @@
 package org.rag4j.chatter.web.agents;
 
+import org.rag4j.chatter.core.agent.Agent;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
