@@ -15,7 +15,7 @@ import {
   useColorMode,
   useColorModeValue
 } from "@chakra-ui/react";
-import { IoMoon, IoSunny } from "react-icons/io5";
+import { IoMoon, IoSunny, IoTrashOutline } from "react-icons/io5";
 
 import { PresenceDto } from "@/lib/api/presence";
 
@@ -23,6 +23,7 @@ interface MessageHeaderProps {
   status: "idle" | "connecting" | "open" | "closed" | "error";
   source: "backend" | "mock";
   participants?: PresenceDto[];
+  onClear?: () => void | Promise<void>;
 }
 
 const statusConfig: Record<
@@ -36,7 +37,7 @@ const statusConfig: Record<
   error: { label: "Realtime error", color: "red" }
 };
 
-export function MessageHeader({ status, source, participants = [] }: MessageHeaderProps) {
+export function MessageHeader({ status, source, participants = [], onClear }: MessageHeaderProps) {
   const { toggleColorMode, colorMode } = useColorMode();
   const bg = useColorModeValue("white", "whiteAlpha.200");
   const headingColor = useColorModeValue("gray.800", "gray.100");
@@ -94,6 +95,17 @@ export function MessageHeader({ status, source, participants = [] }: MessageHead
         <Text fontSize="sm" color={onlineColor}>
           {participants.filter((participant) => participant.online).length} online
         </Text>
+        {onClear && (
+          <Tooltip label="Clear all messages and moderation events">
+            <IconButton
+              aria-label="Clear all"
+              icon={<IoTrashOutline />}
+              variant="outline"
+              colorScheme="red"
+              onClick={onClear}
+            />
+          </Tooltip>
+        )}
         <Box>
           <IconButton
             aria-label="Toggle color mode"

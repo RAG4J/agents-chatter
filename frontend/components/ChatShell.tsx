@@ -32,14 +32,16 @@ export default function ChatShell() {
     error,
     source,
     isSending,
-    clearError
+    clearError,
+    clearMessages
   } = useMessagesFeed();
 
   const { participants } = usePresence();
   const {
     events: moderationEvents,
     error: moderationError,
-    clearError: clearModerationError
+    clearError: clearModerationError,
+    clearEvents: clearModerationEvents
   } = useModerationEvents(10);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -64,6 +66,10 @@ export default function ChatShell() {
           status={status}
           source={source}
           participants={participants}
+          onClear={async () => {
+            await clearMessages();
+            await clearModerationEvents();
+          }}
         />
         <Grid
           templateColumns={{ base: "1fr", lg: "3fr 2fr" }}

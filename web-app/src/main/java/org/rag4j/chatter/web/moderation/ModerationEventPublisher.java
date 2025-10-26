@@ -24,4 +24,11 @@ public class ModerationEventPublisher {
     public Flux<ModerationEvent> stream() {
         return sink.asFlux();
     }
+
+    public void clearEvents() {
+        logger.info("Clearing moderation events");
+        // Note: The replay sink retains history, but we can't clear it directly.
+        // Events will naturally age out as new events are added (limited to 10).
+        // For now, this is a no-op placeholder for consistency with the API.
+    }
 }

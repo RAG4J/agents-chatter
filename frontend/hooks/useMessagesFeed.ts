@@ -7,6 +7,7 @@ import {
   postMessage,
   resolveWebSocketUrl,
   mapDtoToMessage,
+  clearMessages as clearMessagesApi,
   type MessageDto
 } from "@/lib/api/messages";
 import { Message } from "@/lib/types";
@@ -176,6 +177,23 @@ export function useMessagesFeed(initial: Message[] = []) {
     []
   );
 
+  const clearMessages = useMemo(
+    () => async () => {
+      setError(null);
+      try {
+        await clearMessagesApi();
+        setMessages([]);
+      } catch (clearError) {
+        setError(
+          clearError instanceof Error
+            ? clearError.message
+            : "Failed to clear messages."
+        );
+      }
+    },
+    []
+  );
+
   return {
     messages,
     status,
@@ -184,6 +202,7 @@ export function useMessagesFeed(initial: Message[] = []) {
     source,
     isSending,
     publish,
+    clearMessages,
     clearError: () => setError(null)
   };
 }

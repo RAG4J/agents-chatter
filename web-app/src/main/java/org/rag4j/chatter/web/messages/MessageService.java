@@ -47,6 +47,10 @@ public class MessageService {
         return messageBus.stream();
     }
 
+    public void clearHistory() {
+        history.clear();
+    }
+
     @PreDestroy
     void shutdown() {
         if (subscription != null && !subscription.isDisposed()) {

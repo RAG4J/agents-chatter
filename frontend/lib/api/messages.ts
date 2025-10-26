@@ -143,3 +143,20 @@ export function resolveWebSocketUrl(locationOrigin?: string): string | null {
 
   return deriveUrl(API_BASE);
 }
+
+export async function clearMessages(): Promise<void> {
+  try {
+    const res = await fetch(`${API_BASE}/messages`, {
+      method: "DELETE"
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to clear messages: ${res.status} ${res.statusText}`);
+    }
+  } catch (error) {
+    if (hasBackend) {
+      console.error("Failed to clear messages:", error);
+      throw error;
+    }
+    // In mock mode, silently succeed
+  }
+}

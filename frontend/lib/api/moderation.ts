@@ -33,3 +33,17 @@ export function createModerationEventSource(
   }
   return source;
 }
+
+export async function clearModerationEvents(): Promise<void> {
+  try {
+    const res = await fetch(`${getApiBase()}/moderation/events`, {
+      method: "DELETE"
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to clear moderation events: ${res.status} ${res.statusText}`);
+    }
+  } catch (error) {
+    console.error("Failed to clear moderation events:", error);
+    throw error;
+  }
+}

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   createModerationEventSource,
+  clearModerationEvents as clearModerationEventsApi,
   type ModerationEventDto
 } from "@/lib/api/moderation";
 
@@ -44,7 +45,24 @@ export function useModerationEvents(limit = 25) {
     []
   );
 
-  return { events, error, clearError };
+  const clearEvents = useMemo(
+    () => async () => {
+      setError(null);
+      try {
+        await clearModerationEventsApi();
+        setEvents([]);
+      } catch (clearError) {
+        setError(
+          clearError instanceof Error
+            ? clearError.message
+            : "Failed to clear moderation events."
+        );
+      }
+    },
+    []
+  );
+
+  return { events, error, clearError, clearEvents };
 }
 
 function mapDtoToEvent(dto: ModerationEventDto): ModerationEvent {
