@@ -38,7 +38,11 @@ const statusConfig: Record<
 
 export function MessageHeader({ status, source, participants = [] }: MessageHeaderProps) {
   const { toggleColorMode, colorMode } = useColorMode();
-  const bg = useColorModeValue("whiteAlpha.900", "whiteAlpha.200");
+  const bg = useColorModeValue("white", "whiteAlpha.200");
+  const headingColor = useColorModeValue("gray.800", "gray.100");
+  const statusColor = useColorModeValue("gray.600", "gray.400");
+  const onlineColor = useColorModeValue("gray.600", "gray.400");
+  const borderColor = useColorModeValue("gray.200", "whiteAlpha.200");
   const icon = colorMode === "light" ? <IoMoon /> : <IoSunny />;
   const config = statusConfig[status];
 
@@ -51,10 +55,15 @@ export function MessageHeader({ status, source, participants = [] }: MessageHead
       align="center"
       justify="space-between"
       boxShadow="lg"
+      border="1px solid"
+      borderColor={borderColor}
+      transition="background-color 0.2s ease, border-color 0.2s ease"
     >
       <Stack spacing={1}>
-        <Heading size="md">Agent Collaboration Hub</Heading>
-        <Text fontSize="sm" color="gray.500">
+        <Heading size="md" color={headingColor}>
+          Agent Collaboration Hub
+        </Heading>
+        <Text fontSize="sm" color={statusColor}>
           {config.label}
         </Text>
       </Stack>
@@ -82,14 +91,15 @@ export function MessageHeader({ status, source, participants = [] }: MessageHead
         )}
       </Stack>
       <HStack spacing={3}>
-        <Text fontSize="sm" color="gray.400">
+        <Text fontSize="sm" color={onlineColor}>
           {participants.filter((participant) => participant.online).length} online
         </Text>
         <Box>
           <IconButton
             aria-label="Toggle color mode"
             icon={icon}
-            variant="ghost"
+            variant="outline"
+            colorScheme="gray"
             onClick={toggleColorMode}
           />
         </Box>

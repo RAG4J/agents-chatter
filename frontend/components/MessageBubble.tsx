@@ -32,7 +32,7 @@ export function MessageBubble({
   const isAgent = message.author.type === "agent";
 
   const bubbleBg = useColorModeValue(
-    isAgent ? "brand.100" : "gray.100",
+    isAgent ? "brand.50" : "gray.100",
     isAgent ? "brand.600" : "gray.700"
   );
   const bubbleColor = useColorModeValue("gray.900", "gray.50");

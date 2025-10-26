@@ -12,7 +12,8 @@ import {
   SkeletonText,
   Stack,
   Text,
-  useBreakpointValue
+  useBreakpointValue,
+  useColorModeValue
 } from "@chakra-ui/react";
 
 import { MessageComposer } from "@/components/MessageComposer";
@@ -42,6 +43,19 @@ export default function ChatShell() {
   } = useModerationEvents(10);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const messagePanelBg = useColorModeValue("white", "whiteAlpha.100");
+  const messagePanelBorder = useColorModeValue("gray.200", "whiteAlpha.200");
+  const messagePanelShadow = useColorModeValue("xl", "2xl");
+  const insightsBg = useColorModeValue("white", "whiteAlpha.100");
+  const insightsBorder = useColorModeValue("gray.200", "whiteAlpha.200");
+  const insightsBodyColor = useColorModeValue("gray.600", "gray.400");
+  const insightsCaptionColor = useColorModeValue("gray.500", "gray.500");
+  const highlightTextColor = useColorModeValue("orange.500", "orange.300");
+  const insightsHeadingColor = useColorModeValue("gray.800", "gray.100");
+  const recentHeadingColor = useColorModeValue("gray.700", "gray.200");
+  const moderationCardBg = useColorModeValue("gray.50", "blackAlpha.500");
+  const moderationBorderColor = useColorModeValue("gray.200", "whiteAlpha.200");
+  const moderationTextColor = useColorModeValue("gray.700", "gray.100");
 
   return (
     <Container maxW="6xl" py={{ base: 8, md: 12 }}>
@@ -58,14 +72,14 @@ export default function ChatShell() {
           <GridItem>
             <Flex
               direction="column"
-              bg="blackAlpha.400"
+              bg={messagePanelBg}
               borderRadius="3xl"
               p={{ base: 4, md: 8 }}
               minH="70vh"
-              backdropFilter="blur(12px)"
-              boxShadow="2xl"
+              boxShadow={messagePanelShadow}
               border="1px solid"
-              borderColor="whiteAlpha.200"
+              borderColor={messagePanelBorder}
+              transition="background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease"
             >
               {error && (
                 <Alert status="warning" borderRadius="md" mb={4}>
@@ -98,17 +112,18 @@ export default function ChatShell() {
           <GridItem>
             <Stack
               spacing={4}
-              bg="whiteAlpha.100"
+              bg={insightsBg}
               borderRadius="3xl"
               p={{ base: 4, md: 6 }}
-              boxShadow="xl"
+              boxShadow={messagePanelShadow}
               border="1px solid"
-              borderColor="whiteAlpha.200"
+              borderColor={insightsBorder}
+              transition="background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease"
             >
-              <Text fontSize="lg" fontWeight="semibold">
+              <Text fontSize="lg" fontWeight="semibold" color={insightsHeadingColor}>
                 Conversation Insights
               </Text>
-              <Text fontSize="sm" color="gray.400">
+              <Text fontSize="sm" color={insightsBodyColor}>
                 Preview how agents collaborate in real time. This panel can
                 surface summaries, suggested prompts, or system status once the
                 backend services are connected.
@@ -129,35 +144,36 @@ export default function ChatShell() {
                 </Alert>
               )}
               <Stack spacing={3}>
-                <Text fontSize="sm" fontWeight="semibold" color="gray.200">
+                <Text fontSize="sm" fontWeight="semibold" color={recentHeadingColor}>
                   Recent moderation
                 </Text>
                 {moderationEvents.length === 0 ? (
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={insightsBodyColor}>
                     No moderation actions yet.
                   </Text>
                 ) : (
                   moderationEvents.map((event) => (
-                    <Box
-                      key={`${event.threadId}-${event.occurredAt.getTime()}`}
-                      bg="blackAlpha.500"
+                      <Box
+                        key={`${event.threadId}-${event.occurredAt.getTime()}`}
+                      bg={moderationCardBg}
                       borderRadius="lg"
                       p={3}
                       border="1px solid"
-                      borderColor="whiteAlpha.200"
+                      borderColor={moderationBorderColor}
+                      transition="background-color 0.2s ease, border-color 0.2s ease"
                     >
-                      <Text fontSize="sm" fontWeight="medium" color="orange.200">
+                      <Text fontSize="sm" fontWeight="medium" color={highlightTextColor}>
                         {event.agent}
                       </Text>
-                      <Text fontSize="xs" color="gray.400">
+                      <Text fontSize="xs" color={insightsCaptionColor}>
                         {event.occurredAt.toLocaleTimeString()} • Thread{" "}
                         {event.threadId.slice(0, 8)}
                       </Text>
-                      <Text fontSize="sm" color="gray.100" mt={2}>
+                      <Text fontSize="sm" color={moderationTextColor} mt={2}>
                         {event.rationale}
                       </Text>
                       {event.messagePreview && (
-                        <Text fontSize="xs" color="gray.400" mt={2} fontStyle="italic">
+                        <Text fontSize="xs" color={insightsCaptionColor} mt={2} fontStyle="italic">
                           “{event.messagePreview}”
                         </Text>
                       )}
@@ -166,13 +182,13 @@ export default function ChatShell() {
                 )}
               </Stack>
               {source === "mock" && (
-                <Text fontSize="sm" color="orange.300">
+                <Text fontSize="sm" color={highlightTextColor}>
                   You&apos;re currently viewing mock data. Start the backend to
                   see live updates.
                 </Text>
               )}
               {isMobile && (
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={insightsBodyColor}>
                   Tip: Rotate your device for a wider canvas or view on desktop
                   to see the split layout.
                 </Text>

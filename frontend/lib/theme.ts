@@ -1,6 +1,7 @@
 "use client";
 
-import { extendTheme, ThemeConfig } from "@chakra-ui/react";
+import { extendTheme, StyleFunctionProps, ThemeConfig } from "@chakra-ui/react";
+import { mode } from "@chakra-ui/theme-tools";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -30,12 +31,13 @@ const theme = extendTheme({
     body: "Inter, system-ui, sans-serif"
   },
   styles: {
-    global: {
+    global: (props: StyleFunctionProps) => ({
       body: {
-        bg: "gray.900",
-        color: "gray.50"
+        bg: mode("gray.50", "gray.900")(props),
+        color: mode("gray.900", "gray.50")(props),
+        transition: "background-color 0.2s ease, color 0.2s ease"
       }
-    }
+    })
   },
   components: {
     Button: {
