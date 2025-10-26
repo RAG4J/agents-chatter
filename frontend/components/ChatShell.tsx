@@ -134,12 +134,7 @@ export default function ChatShell() {
               transition="background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease"
             >
               <Text fontSize="lg" fontWeight="semibold" color={insightsHeadingColor}>
-                Conversation Insights
-              </Text>
-              <Text fontSize="sm" color={insightsBodyColor}>
-                Preview how agents collaborate in real time. This panel can
-                surface summaries, suggested prompts, or system status once the
-                backend services are connected.
+                Recent Moderation
               </Text>
               {moderationError && (
                 <Alert status="warning" variant="subtle" borderRadius="md">
@@ -157,9 +152,6 @@ export default function ChatShell() {
                 </Alert>
               )}
               <Stack spacing={3}>
-                <Text fontSize="sm" fontWeight="semibold" color={recentHeadingColor}>
-                  Recent moderation
-                </Text>
                 {moderationEvents.length === 0 ? (
                   <Text fontSize="sm" color={insightsBodyColor}>
                     No moderation actions yet.
