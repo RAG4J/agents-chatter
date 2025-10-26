@@ -5,21 +5,26 @@ import org.rag4j.chatter.core.agent.Agent;
 import org.rag4j.chatter.core.agent.AgentLifecycleManager;
 import org.rag4j.chatter.core.agent.AgentRegistry;
 import org.rag4j.chatter.core.message.MessageEnvelope;
+import org.rag4j.chatter.core.moderation.ModerationEvent;
 import org.rag4j.chatter.core.presence.PresenceRole;
 import org.rag4j.chatter.web.messages.MessageService;
+import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 import org.rag4j.chatter.web.presence.PresenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Central service managing the lifecycle and infrastructure concerns for all agents.
- * 
+ *
  * <p>This manager handles:
  * <ul>
  *   <li>Agent subscription to message streams</li>
@@ -29,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>Message filtering (self-messages, empty responses)</li>
  *   <li>Response publication</li>
  * </ul>
- * 
+ *
  * <p>Agents implementing the {@link Agent} interface focus solely on business logic,
  * while this manager handles all cross-cutting concerns.
  */
@@ -42,29 +47,35 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
     private final AgentPublisher agentPublisher;
     private final PresenceService presenceService;
     private final AgentRegistry agentRegistry;
+    private final ModerationEventPublisher eventPublisher;
+    private final int maxAgentDepth;
     private final Map<String, Disposable> subscriptions = new ConcurrentHashMap<>();
 
     public DefaultAgentLifecycleManager(
             MessageService messageService,
             AgentPublisher agentPublisher,
             PresenceService presenceService,
-            AgentRegistry agentRegistry) {
+            AgentRegistry agentRegistry,
+            ModerationEventPublisher eventPublisher,
+            @Value("${conversation.max-agent-depth:2}") int maxAgentDepth) {
         this.messageService = messageService;
         this.agentPublisher = agentPublisher;
         this.presenceService = presenceService;
         this.agentRegistry = agentRegistry;
+        this.eventPublisher = eventPublisher;
+        this.maxAgentDepth = maxAgentDepth;
     }
 
     /**
      * Subscribes an agent to the message stream and manages its lifecycle.
      * The agent will start receiving messages and can publish responses.
-     * 
+     *
      * @param agent the agent to subscribe
      */
     @Override
     public void subscribeAgent(Agent agent) {
         String agentName = agent.name();
-        
+
         if (subscriptions.containsKey(agentName)) {
             logger.warn("Agent '{}' is already subscribed, skipping", agentName);
             return;
@@ -80,11 +91,16 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
             presenceService.markOnline(agentName, PresenceRole.AGENT);
         }
 
-        // Subscribe to message stream
+        // Subscribe to message stream with non-blocking processing
         Disposable subscription = messageService.stream()
                 .filter(envelope -> shouldProcessMessage(agent, envelope))
+                .flatMap(envelope ->
+                                Mono.fromRunnable(() -> handleMessage(agent, envelope))
+                                        .subscribeOn(Schedulers.boundedElastic()),
+                        256) // Concurrency limit to prevent resource exhaustion
                 .subscribe(
-                        envelope -> handleMessage(agent, envelope),
+                        v -> {
+                        }, // handled in flatMap
                         error -> logger.error("Agent '{}' stream error: {}", agentName, error.getMessage(), error)
                 );
 
@@ -94,13 +110,13 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
 
     /**
      * Unsubscribes an agent and cleans up its resources.
-     * 
+     *
      * @param agent the agent to unsubscribe
      */
     @Override
     public void unsubscribeAgent(Agent agent) {
         String agentName = agent.name();
-        
+
         Disposable subscription = subscriptions.remove(agentName);
         if (subscription != null && !subscription.isDisposed()) {
             subscription.dispose();
@@ -139,8 +155,19 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
         }
 
         // Skip high-depth agent messages to prevent deep reply chains
-        if (envelope.agentReplyDepth() >= 2) {
-            logger.debug("Agent '{}' skipping high-depth message (depth={})", agentName, envelope.agentReplyDepth());
+        if (envelope.agentReplyDepth() >= maxAgentDepth) {
+            logger.debug("Agent '{}' skipping high-depth message (depth={}, max={})",
+                    agentName, envelope.agentReplyDepth(), maxAgentDepth);
+
+            // Publish moderation event so user knows why agent isn't replying
+            eventPublisher.publish(ModerationEvent.rejection(
+                    envelope.threadId(),
+                    agentName,
+                    String.format("Agent filtered message, max allowed: %d)", maxAgentDepth),
+                    java.time.Instant.now(),
+                    Optional.empty(),
+                    Optional.of(envelope.agentReplyDepth())));
+
             return false;
         }
 
@@ -159,7 +186,7 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
      */
     private void handleMessage(Agent agent, MessageEnvelope envelope) {
         String agentName = agent.name();
-        
+
         logger.debug("Agent '{}' processing message from '{}'", agentName, envelope.author());
 
         agent.processMessage(envelope)
@@ -177,7 +204,7 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
                         return Mono.empty();
                     }
 
-                    logger.info("Agent '{}' publishing response: '{}'", agentName, 
+                    logger.info("Agent '{}' publishing response: '{}'", agentName,
                             response.length() > 50 ? response.substring(0, 50) + "..." : response);
 
                     // Publish the response
@@ -191,7 +218,7 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
                             .then();
                 })
                 .onErrorResume(error -> {
-                    logger.error("Agent '{}' failed to process message: {}", 
+                    logger.error("Agent '{}' failed to process message: {}",
                             agentName, error.getMessage(), error);
                     return Mono.empty();
                 })

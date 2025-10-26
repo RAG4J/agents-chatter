@@ -43,6 +43,67 @@ class ConversationCoordinatorTests {
     }
 
     @Test
+    void parallelAgentRepliesHaveSameDepth() {
+        // Human sends message (depth=0)
+        ConversationCoordinator.PublishResult.Accepted human = (ConversationCoordinator.PublishResult.Accepted)
+                coordinator.handlePublish(
+                        ConversationCoordinator.PublishRequest.forHuman("alice", "What's sci-fi?", Optional.empty()));
+        
+        assertThat(human.envelope().agentReplyDepth()).isEqualTo(0);
+        
+        // Two agents reply to the same human message - both should have depth=1
+        var agent1Reply = coordinator.handlePublish(
+                ConversationCoordinator.PublishRequest.forAgent(
+                        "StarWars Agent",
+                        "Star Wars is the best!",
+                        Optional.of(human.envelope().threadId()),
+                        Optional.of(human.envelope().id()),
+                        Optional.of(human.envelope())));
+        
+        var agent2Reply = coordinator.handlePublish(
+                ConversationCoordinator.PublishRequest.forAgent(
+                        "StarTrek Agent",
+                        "Star Trek is superior!",
+                        Optional.of(human.envelope().threadId()),
+                        Optional.of(human.envelope().id()),
+                        Optional.of(human.envelope())));
+        
+        assertThat(agent1Reply).isInstanceOf(ConversationCoordinator.PublishResult.Accepted.class);
+        assertThat(agent2Reply).isInstanceOf(ConversationCoordinator.PublishResult.Accepted.class);
+        
+        MessageEnvelope agent1Envelope = ((ConversationCoordinator.PublishResult.Accepted) agent1Reply).envelope();
+        MessageEnvelope agent2Envelope = ((ConversationCoordinator.PublishResult.Accepted) agent2Reply).envelope();
+        
+        // Both agents replying to the same depth-0 message should have depth=1
+        assertThat(agent1Envelope.agentReplyDepth()).isEqualTo(1);
+        assertThat(agent2Envelope.agentReplyDepth()).isEqualTo(1);
+        
+        // Now agents reply to each other's messages - both should have depth=2
+        var agent1CounterReply = coordinator.handlePublish(
+                ConversationCoordinator.PublishRequest.forAgent(
+                        "StarWars Agent",
+                        "Nope, Star Wars!",
+                        Optional.of(human.envelope().threadId()),
+                        Optional.of(agent2Envelope.id()),
+                        Optional.of(agent2Envelope)));
+        
+        var agent2CounterReply = coordinator.handlePublish(
+                ConversationCoordinator.PublishRequest.forAgent(
+                        "StarTrek Agent",
+                        "Wrong, Star Trek!",
+                        Optional.of(human.envelope().threadId()),
+                        Optional.of(agent1Envelope.id()),
+                        Optional.of(agent1Envelope)));
+        
+        MessageEnvelope agent1Counter = ((ConversationCoordinator.PublishResult.Accepted) agent1CounterReply).envelope();
+        MessageEnvelope agent2Counter = ((ConversationCoordinator.PublishResult.Accepted) agent2CounterReply).envelope();
+        
+        // Both replying to depth-1 messages should have depth=2
+        assertThat(agent1Counter.agentReplyDepth()).isEqualTo(2);
+        assertThat(agent2Counter.agentReplyDepth()).isEqualTo(2);
+    }
+
+    @Test
     void agentDepthLimitBlocksFurtherReplies() {
         ConversationCoordinator.PublishResult.Accepted human = (ConversationCoordinator.PublishResult.Accepted)
                 coordinator.handlePublish(

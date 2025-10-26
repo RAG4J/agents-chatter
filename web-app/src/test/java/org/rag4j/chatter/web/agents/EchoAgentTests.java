@@ -57,7 +57,7 @@ class EchoAgentTests {
         
         // Create lifecycle manager and subscribe agent
         AgentLifecycleManager lifecycleManager = new DefaultAgentLifecycleManager(
-                messageService, agentPublisher, presenceService, agentRegistry);
+                messageService, agentPublisher, presenceService, agentRegistry, eventPublisher, 2);
         subscriber = new EchoAgent(lifecycleManager);
         subscriber.init();  // Manually call @PostConstruct for testing
     }
@@ -114,6 +114,38 @@ class EchoAgentTests {
                 .then(() -> messageService.publish(incoming))
                 .expectTimeout(Duration.ofMillis(200))
                 .verify();
+    }
+
+    @Test
+    void publishesModerationEventWhenFilteringHighDepthMessage() {
+        moderatorService.setDelegate(context -> ModerationDecision.approve());
+        UUID threadId = UUID.randomUUID();
+        MessageEnvelope incoming = MessageEnvelope.fromMetadata(
+                "Loop Agent",
+                "ping",
+                threadId,
+                Optional.of(UUID.randomUUID()),
+                MessageOrigin.AGENT,
+                2); // depth=2, which equals maxAgentDepth
+
+        // Verify no agent response is published
+        StepVerifier.create(
+                        messageService.stream()
+                                .filter(envelope -> EchoAgent.AGENT_NAME.equals(envelope.author()))
+                                .take(1))
+                .then(() -> messageService.publish(incoming))
+                .expectTimeout(Duration.ofMillis(200))
+                .verify();
+
+        // Verify moderation event was published
+        assertThat(eventPublisher.events())
+                .isNotEmpty()
+                .anySatisfy(event -> {
+                    assertThat(event.agent()).isEqualTo(EchoAgent.AGENT_NAME);
+                    assertThat(event.threadId()).isEqualTo(threadId);
+                    assertThat(event.rationale()).contains("filtered message at depth 2");
+                    assertThat(event.attemptedDepth()).isPresent().hasValue(2);
+                });
     }
 
     @Test

@@ -58,9 +58,18 @@ public class ConversationCoordinator {
 
         ThreadState currentState = threads.get(threadId);
 
-        int nextDepth = request.originType() == MessageOrigin.AGENT
-                ? ((currentState != null ? currentState.agentDepth : 0) + 1)
-                : 0;
+        // Calculate depth based on parent message, not thread-wide counter
+        int nextDepth;
+        if (request.originType() == MessageOrigin.HUMAN) {
+            nextDepth = 0;
+        } else if (request.parentEnvelope().isPresent()) {
+            // Agent replying to a specific message: inherit parent's depth + 1
+            nextDepth = request.parentEnvelope().get().agentReplyDepth() + 1;
+        } else {
+            // Agent replying without parent context (spontaneous message)
+            logger.warn("Agent {} publishing without parent envelope, defaulting to depth 1", request.author());
+            nextDepth = 1;
+        }
 
         if (request.originType() == MessageOrigin.AGENT && nextDepth > maxAgentDepth) {
             logger.info("Blocking agent response for {} due to depth {} > {}", request.author(), nextDepth, maxAgentDepth);
@@ -106,11 +115,8 @@ public class ConversationCoordinator {
 
         MessageEnvelope published = messageService.publish(envelope);
 
-        if (request.originType() == MessageOrigin.HUMAN) {
-            threads.put(threadId, ThreadState.forHuman(published.id()));
-        } else {
-            threads.put(threadId, ThreadState.forAgent(published.id(), nextDepth));
-        }
+        // Update thread state with last message (depth tracking is now per-message)
+        threads.put(threadId, new ThreadState(published.id(), Instant.now()));
 
         return PublishResult.accepted(published);
     }
@@ -166,14 +172,10 @@ public class ConversationCoordinator {
         }
     }
 
-    private record ThreadState(UUID lastMessageId, int agentDepth, Instant updatedAt) {
-
-        static ThreadState forHuman(UUID messageId) {
-            return new ThreadState(messageId, 0, Instant.now());
-        }
-
-        static ThreadState forAgent(UUID messageId, int agentDepth) {
-            return new ThreadState(messageId, agentDepth, Instant.now());
-        }
+    /**
+     * Tracks the last message ID in a thread for parent linking.
+     * Depth is now calculated from the parent message, not stored here.
+     */
+    private record ThreadState(UUID lastMessageId, Instant updatedAt) {
     }
 }

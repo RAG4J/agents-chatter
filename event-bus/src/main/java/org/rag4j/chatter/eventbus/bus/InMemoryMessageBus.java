@@ -22,7 +22,7 @@ public class InMemoryMessageBus implements MessageBus {
     private final Flux<MessageEnvelope> sharedFlux;
 
     public InMemoryMessageBus() {
-        this(Sinks.many().multicast().directAllOrNothing());
+        this(Sinks.many().multicast().onBackpressureBuffer(1000, false));
     }
 
     public InMemoryMessageBus(Sinks.Many<MessageEnvelope> sink) {
