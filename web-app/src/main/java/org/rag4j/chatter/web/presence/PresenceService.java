@@ -35,7 +35,7 @@ public class PresenceService {
     }
 
     public void markOnline(String name, PresenceRole role) {
-        PresenceEntry entry = participants.computeIfAbsent(normalize(name), key -> new PresenceEntry(new PresenceParticipant(name, role, true)));
+        PresenceEntry entry = participants.computeIfAbsent(normalize(name), key -> new PresenceEntry(new PresenceParticipant(name, role, false)));
         entry.increment();
         logger.debug("Presence online: {} (count={})", entry.participant().name(), entry.count());
         emitSnapshot();

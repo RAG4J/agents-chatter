@@ -84,7 +84,7 @@ public class DefaultAgentLifecycleManager implements AgentLifecycleManager {
         logger.info("Subscribing agent '{}'", agentName);
 
         // Register with activation registry
-        agentRegistry.register(agentName, true);
+        agentRegistry.register(agentName, false);
 
         // Mark as online in presence system
         if (presenceService != null) {

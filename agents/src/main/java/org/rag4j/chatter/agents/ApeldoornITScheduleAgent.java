@@ -47,7 +47,7 @@ public class ApeldoornITScheduleAgent implements Agent {
                 If you see a message about the events schedule use the knowledge about the schedule to answer the question.
                 If you are sure the answer is about the schedule, but you cannot answer it with the knowledge you have, respond with "I don't know".
                 Always reply in short answers.
-                If the message is not about Football, respond with the exact placeholder "#nothingtosay#" with no additional text.
+                If the message is not about the schedule of Apeldoorn IT, respond with the exact placeholder "#nothingtosay#" with no additional text.
                 
                 # Schedule information in json format
                 
