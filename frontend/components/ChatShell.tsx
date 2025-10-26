@@ -4,7 +4,6 @@ import {
   Alert,
   AlertIcon,
   Box,
-  Container,
   Flex,
   Grid,
   GridItem,
@@ -61,7 +60,7 @@ export default function ChatShell() {
   const moderationTextColor = useColorModeValue("gray.700", "gray.100");
 
   return (
-    <Container maxW="6xl" py={{ base: 8, md: 12 }}>
+    <Box px={{ base: 4, md: 8, lg: 12 }} py={{ base: 8, md: 12 }}>
       <Stack spacing={8}>
         <MessageHeader
           status={status}
@@ -72,7 +71,7 @@ export default function ChatShell() {
           }}
         />
         <Grid
-          templateColumns={{ base: "1fr", lg: "1fr 2fr 1.5fr" }}
+          templateColumns={{ base: "1fr", lg: "300px 1fr 400px" }}
           gap={{ base: 6, lg: 6 }}
         >
           {/* Agent Control Sidebar */}
@@ -216,6 +215,6 @@ export default function ChatShell() {
           </GridItem>
         </Grid>
       </Stack>
-    </Container>
+    </Box>
   );
 }
