@@ -15,15 +15,20 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!-- Internal dependencies -->
         <dependency>
             <groupId>org.rag4j.chatter</groupId>
             <artifactId>agents-chatter-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.rag4j.chatter</groupId>
             <artifactId>event-bus</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
+
+        <!-- Spring Boot dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
