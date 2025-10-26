@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.moderation;
+package org.rag4j.chatter.core.moderation;
 
 import java.util.Optional;
 

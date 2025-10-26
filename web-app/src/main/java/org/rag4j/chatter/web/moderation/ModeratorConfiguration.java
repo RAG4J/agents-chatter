@@ -2,6 +2,7 @@ package org.rag4j.chatter.web.moderation;
 
 import java.time.Clock;
 
+import org.rag4j.chatter.core.moderation.ModeratorService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

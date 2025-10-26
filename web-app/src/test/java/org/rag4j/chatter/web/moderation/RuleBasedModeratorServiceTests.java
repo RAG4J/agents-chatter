@@ -11,7 +11,9 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.web.moderation.ModerationEvent;
+import org.rag4j.chatter.core.moderation.AgentMessageContext;
+import org.rag4j.chatter.core.moderation.ModerationDecision;
+import org.rag4j.chatter.core.moderation.ModerationEvent;
 import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
 
 class RuleBasedModeratorServiceTests {

@@ -6,13 +6,13 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.core.message.MessageEnvelope;
+import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.eventbus.bus.ReactorMessageBus;
-import org.rag4j.chatter.web.moderation.ModerationDecision;
-import org.rag4j.chatter.web.moderation.ModerationEvent;
+import org.rag4j.chatter.core.moderation.ModerationDecision;
+import org.rag4j.chatter.core.moderation.ModerationEvent;
 import org.rag4j.chatter.web.moderation.ModerationEventPublisher;
-import org.rag4j.chatter.web.moderation.ModeratorService;
+import org.rag4j.chatter.core.moderation.ModeratorService;
 
 class ConversationCoordinatorTests {
 

@@ -1,4 +1,4 @@
-package org.rag4j.chatter.eventbus.bus;
+package org.rag4j.chatter.core.message;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -7,7 +7,7 @@ import java.util.UUID;
 
 /**
  * Minimal message representation shared between publishers and subscribers.
- * Can be replaced by richer domain objects once the chat-domain module lands.
+ * Core domain type with no framework dependencies.
  */
 public record MessageEnvelope(
         UUID id,

@@ -1,5 +1,6 @@
 package org.rag4j.chatter.web.moderation;
 
+import org.rag4j.chatter.core.moderation.ModerationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

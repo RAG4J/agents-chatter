@@ -2,6 +2,7 @@ package org.rag4j.chatter.eventbus.bus;
 
 import java.util.Objects;
 
+import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;

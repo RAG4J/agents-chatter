@@ -13,6 +13,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.rag4j.chatter.core.moderation.AgentMessageContext;
+import org.rag4j.chatter.core.moderation.ModerationDecision;
+import org.rag4j.chatter.core.moderation.ModerationEvent;
+import org.rag4j.chatter.core.moderation.ModeratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

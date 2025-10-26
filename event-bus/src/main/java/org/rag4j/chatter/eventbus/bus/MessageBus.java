@@ -1,5 +1,6 @@
 package org.rag4j.chatter.eventbus.bus;
 
+import org.rag4j.chatter.core.message.MessageEnvelope;
 import reactor.core.publisher.Flux;
 
 /**

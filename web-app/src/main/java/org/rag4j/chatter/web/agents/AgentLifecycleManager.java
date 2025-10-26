@@ -1,7 +1,7 @@
 package org.rag4j.chatter.web.agents;
 
 import jakarta.annotation.PreDestroy;
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.core.message.MessageEnvelope;
 import org.rag4j.chatter.web.messages.MessageService;
 import org.rag4j.chatter.web.presence.PresenceRole;
 import org.rag4j.chatter.web.presence.PresenceService;
@@ -130,6 +130,12 @@ public class AgentLifecycleManager {
         // Skip if agent is inactive
         if (!agentRegistry.isActive(agentName)) {
             logger.debug("Agent '{}' is inactive, skipping message", agentName);
+            return false;
+        }
+
+        // Skip high-depth agent messages to prevent deep reply chains
+        if (envelope.agentReplyDepth() >= 2) {
+            logger.debug("Agent '{}' skipping high-depth message (depth={})", agentName, envelope.agentReplyDepth());
             return false;
         }
 

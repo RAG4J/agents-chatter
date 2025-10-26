@@ -16,6 +16,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.rag4j.chatter</groupId>
+            <artifactId>agents-chatter-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>

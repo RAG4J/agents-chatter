@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;

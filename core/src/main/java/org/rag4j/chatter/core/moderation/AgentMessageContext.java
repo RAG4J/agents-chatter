@@ -1,9 +1,9 @@
-package org.rag4j.chatter.web.moderation;
+package org.rag4j.chatter.core.moderation;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.core.message.MessageEnvelope;
 
 public record AgentMessageContext(
         String agentName,

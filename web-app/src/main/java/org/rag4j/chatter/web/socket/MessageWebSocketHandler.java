@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope.MessageOrigin;
+import org.rag4j.chatter.core.message.MessageEnvelope.MessageOrigin;
 import org.rag4j.chatter.web.messages.ConversationCoordinator;
 import org.rag4j.chatter.web.messages.MessageDto;
 import org.rag4j.chatter.web.messages.MessageService;

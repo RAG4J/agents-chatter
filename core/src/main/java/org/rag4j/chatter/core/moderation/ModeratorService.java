@@ -1,4 +1,4 @@
-package org.rag4j.chatter.web.moderation;
+package org.rag4j.chatter.core.moderation;
 
 /**
  * Evaluates prospective agent messages and decides whether they should be published,

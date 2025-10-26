@@ -1,6 +1,6 @@
 package org.rag4j.chatter.web.agents;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.core.message.MessageEnvelope;
 import reactor.core.publisher.Mono;
 
 /**

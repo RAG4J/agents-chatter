@@ -2,7 +2,7 @@ package org.rag4j.chatter.web.messages;
 
 import java.util.UUID;
 
-import org.rag4j.chatter.eventbus.bus.MessageEnvelope;
+import org.rag4j.chatter.core.message.MessageEnvelope;
 
 public record MessageDto(
         String id,
