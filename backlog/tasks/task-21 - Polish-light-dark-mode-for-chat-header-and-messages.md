@@ -4,7 +4,7 @@ title: Polish light/dark mode for chat header and messages
 status: To Do
 assignee: []
 created_date: '2025-10-25 08:26'
-updated_date: '2025-10-26 08:15'
+updated_date: '2025-10-26 08:21'
 labels: []
 dependencies: []
 ---
@@ -32,9 +32,9 @@ Out of scope: broader UI restyling, presence panel redesign, or global theme ove
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-1. Review current Chakra theme usage within the chat header and message components to catalogue light/dark mode issues and contrast gaps.
-2. Prototype updated color tokens (background, foreground, accents) for header titles/status and agent/human bubbles that satisfy contrast guidelines in both modes.
-3. Apply the revised tokens/styles to `MessageHeader`, `ChatShell`, and message bubble components, verifying no layout regressions.
-4. Manually validate light/dark mode appearance across header and message list (desktop + mobile breakpoints); adjust as needed for contrast and readability.
-5. Capture before/after notes or screenshots and run lint/tests to ensure no unintended component styling changes elsewhere.
+1. Audit the entire chat experience under both color modes, noting gaps in background updates for the page shell, message column, and conversation insights panel in addition to header/message text.
+2. Define a cohesive set of light/dark tokens (e.g., surface, panel, accent) and Chakra mode-aware styles that cover the page background, chat container, message list wrapper, and insights card.
+3. Apply the updated tokens to `ChatShell`, header, message container, and conversation insights components so each surface adapts correctly per mode while keeping existing layout/typography.
+4. Revisit message bubble colors to ensure they complement the new surface treatments and still deliver sufficient contrast for agent/human roles.
+5. Manual QA across modes and common breakpoints, logging any regressions, then run lint/tests to confirm no unintended styling changes elsewhere.
 <!-- SECTION:PLAN:END -->
