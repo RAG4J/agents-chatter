@@ -24,9 +24,9 @@ Out of scope: broader UI layout changes, presence panel redesign, or global them
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 #1 Chat header (titles, status, participant indicators) achieves readable contrast and cohesive styling in light mode while preserving dark mode appearance.
-- [ ] #2 #2 Chat shell, message container, and conversation insights surfaces all adopt mode-appropriate backgrounds/accents with no regressions in dark mode.
-- [ ] #3 #3 Agent and human message bubbles retain legibility and visual hierarchy after the light-mode refresh.
+- [ ] #1 Chat header (titles, status, participant indicators) achieves readable contrast and cohesive styling in light mode while preserving dark mode appearance.
+- [ ] #2 Chat shell, message container, and conversation insights surfaces all adopt mode-appropriate backgrounds/accents with no regressions in dark mode.
+- [ ] #3 Agent and human message bubbles retain legibility and visual hierarchy after the light-mode refresh.
 <!-- AC:END -->
 
 ## Implementation Plan
