@@ -2,8 +2,10 @@
 id: task-11
 title: Allow resetting chat history
 status: To Do
-assignee: []
+assignee:
+  - Warp
 created_date: '2025-10-23 22:52'
+updated_date: '2025-10-26 10:47'
 labels: []
 dependencies: []
 ---
