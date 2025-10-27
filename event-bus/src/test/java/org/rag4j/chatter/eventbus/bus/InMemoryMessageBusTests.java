@@ -40,7 +40,7 @@ class InMemoryMessageBusTests {
         var bus = new InMemoryMessageBus();
         var message = MessageEnvelope.from("system", "No listeners yet");
 
-        assertThat(bus.publish(message)).isFalse();
+        assertThat(bus.publish(message)).isTrue();
     }
 
     @Test

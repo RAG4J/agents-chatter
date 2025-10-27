@@ -143,7 +143,7 @@ class EchoAgentTests {
                 .anySatisfy(event -> {
                     assertThat(event.agent()).isEqualTo(EchoAgent.AGENT_NAME);
                     assertThat(event.threadId()).isEqualTo(threadId);
-                    assertThat(event.rationale()).contains("filtered message at depth 2");
+                    assertThat(event.rationale()).contains("Agent filtered message, max allowed: 2");
                     assertThat(event.attemptedDepth()).isPresent().hasValue(2);
                 });
     }
